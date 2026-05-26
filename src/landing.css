@@ -9,25 +9,182 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Floating mockup dashboard preview */
-@keyframes lp-mock-float {
-  0%, 100% { transform: translateY(0px) rotateX(0deg); }
-  50% { transform: translateY(-10px) rotateX(0.5deg); }
+/* Floating mockup smartphone & cards preview styles */
+.phone-mockup-wrapper {
+  position: relative;
+  width: 100%;
+  max-w: 290px;
+  margin: 0 auto;
+  perspective: 1000px;
+  z-index: 10;
 }
 
-.animate-lp-float {
-  animation: lp-mock-float 6s ease-in-out infinite;
+/* 3D angled float for the phone */
+.animate-phone-float {
+  animation: lp-phone-float 7s ease-in-out infinite;
+  transform-style: preserve-3d;
 }
 
-/* Soft color text gradient */
+@keyframes lp-phone-float {
+  0%, 100% {
+    transform: translateY(0px) rotateX(4deg) rotateY(-4deg) rotateZ(1deg);
+    box-shadow: 0 30px 60px -15px rgba(0,0,0,0.8), 0 0 50px rgba(59, 130, 246, 0.1);
+  }
+  50% {
+    transform: translateY(-15px) rotateX(1deg) rotateY(-1deg) rotateZ(0deg);
+    box-shadow: 0 45px 80px -20px rgba(0,0,0,0.7), 0 0 70px rgba(59, 130, 246, 0.15);
+  }
+}
+
+/* Smartphone body */
+.phone-bezel {
+  width: 100%;
+  height: 620px;
+  background: #090A0F;
+  border: 11px solid #1c1d24;
+  border-radius: 46px;
+  box-shadow: 
+    inset 0 0 4px 2px rgba(255, 255, 255, 0.1),
+    inset 0 0 0 4px #090A0F;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Dynamic Island */
+.phone-dynamic-island {
+  position: absolute;
+  top: 11px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 82px;
+  height: 22px;
+  background: #000000;
+  border-radius: 20px;
+  z-index: 50;
+  box-shadow: inset 0 0 2px rgba(255,255,255,0.2);
+}
+
+/* Speaker line in dynamic island */
+.phone-dynamic-island::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 18px;
+  width: 5px;
+  height: 5px;
+  background: #111;
+  border-radius: 50%;
+  box-shadow: inset 0 0 1px rgba(255,255,255,0.4);
+}
+
+/* Screen */
+.phone-screen {
+  flex: 1;
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  user-select: none;
+}
+
+/* Status Bar */
+.phone-status-bar {
+  height: 24px;
+  display: flex;
+  justify-content: justify-between;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 0 14px;
+  z-index: 40;
+  color: #0f172a;
+}
+
+/* Premium Floating Cards */
+.lp-floating-card {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.98);
+  color: #0f172a;
+  border-radius: 16px;
+  padding: 14px 18px;
+  box-shadow: 
+    0 20px 40px -10px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  z-index: 30;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  min-width: 140px;
+  text-align: left;
+}
+
+.lp-floating-card:hover {
+  transform: translateY(-5px) scale(1.03) !important;
+  box-shadow: 
+    0 30px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(59, 130, 246, 0.3);
+  background: #ffffff;
+}
+
+/* Positions & Floating Animations for Cards */
+.card-on-saves {
+  top: 140px;
+  right: -60px;
+  animation: lp-float-saves 7.5s ease-in-out infinite;
+}
+
+.card-total-expends {
+  bottom: 100px;
+  left: -65px;
+  animation: lp-float-expends 8.2s ease-in-out infinite;
+}
+
+.card-cash-available {
+  bottom: 45px;
+  left: 55px;
+  animation: lp-float-cash 6.8s ease-in-out infinite;
+}
+
+/* Animation keyframes for realistic depth floating */
+@keyframes lp-float-saves {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-16px) translateX(6px) rotate(1deg);
+  }
+}
+
+@keyframes lp-float-expends {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(12px) translateX(-5px) rotate(-1.5deg);
+  }
+}
+
+@keyframes lp-float-cash {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) translateX(8px) rotate(1deg);
+  }
+}
+
+/* Custom transitions and helper styles */
 .lp-gradient-text {
-  background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 50%, #a78bfa 100%);
+  background: linear-gradient(135deg, #10b981 0%, #06b6d4 50%, #3b82f6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Dynamic glow background effects */
 .lp-radial-glow {
   background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.1) 0%, transparent 60%);
 }
@@ -36,7 +193,7 @@
   background: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.08) 0%, transparent 60%);
 }
 
-/* Custom table & grid scrollbars */
+/* Custom scrollbar */
 .lp-scrollbar::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -51,3 +208,4 @@
 .lp-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #334155;
 }
+
