@@ -67,7 +67,7 @@ function MiniBar({ value, max, month }) {
 }
 
 export default function MilestoneDashboard({ profile }) {
-  const storageKey = `salinas_milestone_${profile.id}`
+  const storageKey = `famly_milestone_${profile.id}`
 
   // Load from localStorage or use blank state template
   const [goal, setGoal] = useState(() => {

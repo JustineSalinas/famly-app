@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 import {
   ArrowLeftRight, Home, BookOpen, Target, CreditCard,
   Settings, ChevronRight, User, TrendingUp, ChevronDown, BarChart2, Briefcase, Award
@@ -8,20 +9,21 @@ import MilestoneDashboard from './dashboards/MilestoneDashboard'
 import DebtDashboard from './dashboards/DebtDashboard'
 import PlannerDashboard from './dashboards/PlannerDashboard'
 
-function getDashboardMeta(id) {
-  if (['adrian', 'la', 'keisha'].includes(id))
+function getDashboardMeta(dashboardType) {
+  if (dashboardType === 'tuition')
     return { label: 'Tuition', icon: BookOpen, color: 'text-blue-400', accent: 'bg-blue-500/10 border-blue-500/20' }
-  if (id === 'cj')
+  if (dashboardType === 'milestone')
     return { label: 'Milestone', icon: Target, color: 'text-emerald-400', accent: 'bg-emerald-500/10 border-emerald-500/20' }
-  if (id === 'glenda')
+  if (dashboardType === 'debt')
     return { label: 'Debt Ledger', icon: CreditCard, color: 'text-rose-400', accent: 'bg-rose-500/10 border-rose-500/20' }
   return { label: 'Planner', icon: Briefcase, color: 'text-emerald-400', accent: 'bg-emerald-500/10 border-emerald-500/20' }
 }
 
 export default function Dashboard({ profile, onSwitch }) {
+  const { logout } = useAuth()
   const [activeTab, setActiveTab] = useState('dashboard') // 'dashboard', 'statistics', 'settings'
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const meta = getDashboardMeta(profile.id)
+  const meta = getDashboardMeta(profile.dashboardType)
   const MetaIcon = meta.icon
 
   // Render sub-view
@@ -31,7 +33,7 @@ export default function Dashboard({ profile, onSwitch }) {
         <div className="p-6 max-w-4xl mx-auto space-y-6 fade-in">
           <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
             <BarChart2 size={20} className="text-emerald-400" />
-            Salinas Analytics Overview
+            Family Analytics Overview
           </h2>
           <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center space-y-4">
             <p className="text-slate-400 text-xs leading-relaxed max-w-md mx-auto">
@@ -75,18 +77,24 @@ export default function Dashboard({ profile, onSwitch }) {
             </div>
             <div className="h-px bg-slate-850 w-full" />
             <p className="text-xs text-slate-500 italic">
-              Use "Switch Profile" to log in with another account. Settings changes require administrative authorization.
+              Use "Switch Profile" to select another member. Click below to sign out of your account.
             </p>
+            <button
+              id="logout-btn"
+              onClick={logout}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 text-xs font-semibold transition-colors"
+            >
+              Sign Out
+            </button>
           </div>
         </div>
       )
     }
 
-    // Default dashboard views
-    const id = profile.id
-    if (['adrian', 'la', 'keisha'].includes(id)) return <TuitionDashboard profile={profile} />
-    if (id === 'cj') return <MilestoneDashboard profile={profile} />
-    if (id === 'glenda') return <DebtDashboard profile={profile} />
+    const type = profile.dashboardType
+    if (type === 'tuition') return <TuitionDashboard profile={profile} />
+    if (type === 'milestone') return <MilestoneDashboard profile={profile} />
+    if (type === 'debt') return <DebtDashboard profile={profile} />
     return <PlannerDashboard profile={profile} />
   }
 
@@ -241,7 +249,7 @@ export default function Dashboard({ profile, onSwitch }) {
         <div className="hidden lg:block border-b border-slate-900 bg-slate-950 px-8 py-4">
           <div className="max-w-6xl mx-auto flex items-center text-xs uppercase tracking-wider text-slate-400">
             <div className="flex items-center gap-2">
-              <span className="text-slate-500">Salinas</span>
+              <span className="text-slate-500">Famly</span>
               <ChevronRight size={10} className="text-slate-650" />
               <span className="text-slate-200 font-bold">{profile.name}</span>
               <ChevronRight size={10} className="text-slate-650" />

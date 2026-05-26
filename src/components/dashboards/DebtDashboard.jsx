@@ -20,7 +20,7 @@ function StatusBadge({ status }) {
 }
 
 export default function DebtDashboard({ profile }) {
-  const storageKey = `salinas_debt_${profile.id}`
+  const storageKey = `famly_debt_${profile.id}`
 
   // Load from localStorage or use blank state template
   const [debts, setDebts] = useState(() => {
@@ -32,37 +32,8 @@ export default function DebtDashboard({ profile }) {
         console.error(e)
       }
     }
-    // Default initial template
-    return [
-      {
-        id: 1,
-        company: 'BDO Unibank',
-        type: 'Personal Loan',
-        icon: '🏦',
-        iconBg: 'from-blue-600 to-blue-400',
-        principal: 200000,
-        interestRate: 18.0,
-        monthlyPayment: 5200,
-        remainingTotal: 142800,
-        monthsLeft: 27,
-        nextDue: 'Jun 5, 2025',
-        status: 'CURRENT',
-      },
-      {
-        id: 2,
-        company: 'Security Bank',
-        type: 'Credit Card',
-        icon: '💳',
-        iconBg: 'from-red-600 to-rose-400',
-        principal: 85000,
-        interestRate: 36.0,
-        monthlyPayment: 4500,
-        remainingTotal: 92340,
-        monthsLeft: 21,
-        nextDue: 'Jun 12, 2025',
-        status: 'OVERDUE',
-      },
-    ]
+    // Default: empty slate for new users
+    return []
   })
 
   useEffect(() => {
@@ -184,7 +155,7 @@ export default function DebtDashboard({ profile }) {
             <CreditCard size={22} className="text-rose-400" />
             Debt Ledger
           </h2>
-          <p className="text-slate-400 text-sm mt-1">Glenda's active debt obligations</p>
+          <p className="text-slate-400 text-sm mt-1">{profile.name}'s active debt obligations</p>
         </div>
         <div className="flex items-center gap-2">
           <button

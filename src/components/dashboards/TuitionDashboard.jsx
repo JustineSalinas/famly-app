@@ -17,7 +17,7 @@ function ProgressBar({ pct, color }) {
 }
 
 export default function TuitionDashboard({ profile }) {
-  const storageKey = `salinas_tuition_${profile.id}`
+  const storageKey = `famly_tuition_${profile.id}`
 
   // Load from localStorage or use blank state template
   const [data, setData] = useState(() => {
@@ -29,15 +29,13 @@ export default function TuitionDashboard({ profile }) {
         console.error(e)
       }
     }
-    // Default initial template based on profile
-    const isAJ = profile.id === 'adrian'
-    const isKeisha = profile.id === 'keisha'
+    // Default: blank slate for new users
     return {
-      school: isAJ || isKeisha ? 'University of San Agustin' : 'Central Philippine University',
-      degree: isAJ ? 'BS Information Technology' : isKeisha ? 'BS Medical Technology' : 'BS Computer Science',
-      year: isAJ ? '2nd Year' : isKeisha ? '1st Year' : '3rd Year',
-      schoolStart: isAJ || isKeisha ? 'July 13' : '',
-      color: profile.id === 'la' ? 'purple' : profile.id === 'keisha' ? 'cyan' : 'blue',
+      school: '',
+      degree: '',
+      year: '',
+      schoolStart: '',
+      color: 'blue',
       historicalUnpaid: [],
       currentSemester: {
         label: '',

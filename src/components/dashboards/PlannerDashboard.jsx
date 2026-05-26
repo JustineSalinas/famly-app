@@ -6,7 +6,7 @@ function fmt(n) {
 }
 
 export default function PlannerDashboard({ profile }) {
-  const storageKey = `salinas_plans_bong`
+  const storageKey = `famly_plans_${profile.id}`
 
   // Load from localStorage or use blank state template
   const [plans, setPlans] = useState(() => {
