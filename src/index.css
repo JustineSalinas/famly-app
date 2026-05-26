@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  /* Rich Black & Slate Charcoal overrides */
+  --color-slate-950: #030712; /* Rich black background */
+  --color-slate-900: #0d131f; /* Slate charcoal cards */
+  --color-slate-850: #162032; /* Mid charcoal divider */
+  --color-slate-800: #1e293b; /* Slate charcoal borders */
+  --color-slate-700: #334155; /* Light border hover */
+  --color-slate-600: #475569;
+  --color-slate-500: #64748b;
+  --color-slate-400: #94a3b8; /* Soft white/gray text */
+  --color-slate-300: #cbd5e1;
+  --color-slate-200: #e2e8f0;
+  --color-slate-100: #f8fafc; /* Soft white active text */
+
+  /* Emerald values */
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
+  --color-emerald-400: #34d399;
+
+  /* Rose values */
+  --color-rose-500: #f43f5e;
+  --color-rose-600: #e11d48;
+  --color-rose-450: #fb7185;
+
+  /* Map standard utility colors to fit the new Emerald and Rose palette */
+  --color-green-500: #10b981;
+  --color-green-400: #34d399;
+  --color-green-600: #059669;
+  --color-green-900: #064e3b;
+
+  --color-red-500: #f43f5e;
+  --color-red-400: #fb7185;
+  --color-red-600: #e11d48;
+  --color-red-900: #4c0519;
+
+  --color-orange-500: #f43f5e;
+  --color-orange-400: #fb7185;
+  --color-orange-300: #fda4af;
+  --color-orange-200: #fecdd3;
+  --color-orange-100: #ffe4e6;
+
+  --color-yellow-500: #10b981;
+  --color-yellow-400: #34d399;
+  --color-yellow-600: #059669;
+  --color-yellow-300: #a7f3d0;
+
+  --color-blue-500: #10b981;
+  --color-blue-400: #34d399;
+  --color-blue-600: #059669;
+
+  --color-purple-500: #10b981;
+  --color-purple-400: #34d399;
+  --color-purple-600: #059669;
+
+  --color-cyan-500: #10b981;
+  --color-cyan-400: #34d399;
+  --color-cyan-600: #059669;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  background-color: #030712; /* Rich black */
+  color: #F8FAFC; /* Soft white */
+  margin: 0;
+  padding: 0;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #030712;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Glow effects utilizing new Rose (unpaid) and Emerald (paid/milestones) scheme */
+.glow-red {
+  box-shadow: 0 0 20px rgba(244, 63, 94, 0.25), 0 0 40px rgba(244, 63, 94, 0.08);
+}
+.glow-yellow {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.25), 0 0 40px rgba(16, 185, 129, 0.08);
+}
+.glow-green {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.25), 0 0 40px rgba(16, 185, 129, 0.08);
+}
+.glow-blue {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.25), 0 0 40px rgba(16, 185, 129, 0.08);
+}
+.glow-purple {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.25), 0 0 40px rgba(16, 185, 129, 0.08);
+}
+
+/* Profile card hover */
+.profile-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.profile-card:hover {
+  transform: translateY(-6px) scale(1.03);
+}
+
+/* Fade in */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+/* Slide in from left */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.slide-in {
+  animation: slideIn 0.35s ease forwards;
+}
+
+/* Pulse dot */
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.7; }
+}
+.pulse-dot {
+  animation: pulseDot 2s ease-in-out infinite;
+}
