@@ -1,30 +1,15 @@
 import { useState, useEffect } from 'react'
 import { Plus, Trash2, ArrowRight, ArrowLeft, Check, ClipboardList, Lightbulb, PlayCircle, CheckCircle2 } from 'lucide-react'
+import { useSyncedState } from '../../hooks/useSyncedState'
 
 function fmt(n) {
   return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP', maximumFractionDigits: 0 }).format(n)
 }
 
 export default function PlannerDashboard({ profile }) {
-  const storageKey = `famly_plans_${profile.id}`
+  const storageKey = `plans_${profile.id}`
 
-  // Load from localStorage or use blank state template
-  const [plans, setPlans] = useState(() => {
-    const saved = localStorage.getItem(storageKey)
-    if (saved) {
-      try {
-        return JSON.parse(saved)
-      } catch (e) {
-        console.error(e)
-      }
-    }
-    // Default initial blank template
-    return []
-  })
-
-  useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify(plans))
-  }, [plans, storageKey])
+  const [plans, setPlans, loading] = useSyncedState(storageKey, [])
 
   // Form states
   const [showAddModal, setShowAddModal] = useState(false)
@@ -81,6 +66,25 @@ export default function PlannerDashboard({ profile }) {
   // Calculated Stats
   const totalBudgetActive = active.reduce((s, p) => s + p.budget, 0)
   const totalBudgetIdeas = ideas.reduce((s, p) => s + p.budget, 0)
+
+  if (loading) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
+        <div className="animate-pulse flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-2">
+            <div className="h-7 w-48 bg-slate-800 rounded" />
+            <div className="h-4 w-72 bg-slate-800 rounded" />
+          </div>
+          <div className="h-8 w-32 bg-slate-800 rounded" />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-pulse">
+          {[1,2,3].map(x => (
+            <div key={x} className="bg-slate-900/50 border border-slate-800/80 rounded-2xl h-80" />
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">

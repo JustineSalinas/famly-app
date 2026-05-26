@@ -1,5 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Trash2, Edit2, Users, Check, X, ChevronRight, BookOpen, Target, CreditCard, Briefcase, Settings } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
+import { doc, onSnapshot, setDoc } from 'firebase/firestore'
+import { db } from '../firebase'
 
 // Available emoji avatars to choose from
 const EMOJI_OPTIONS = [
@@ -28,21 +31,7 @@ const GRADIENT_OPTIONS = [
   'from-amber-500 to-yellow-400',
 ]
 
-const STORAGE_KEY = 'famly_family_config'
-
-function loadFamily() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) return JSON.parse(raw)
-  } catch (e) {
-    console.error(e)
-  }
-  return null
-}
-
-function saveFamily(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
-}
+// LocalStorage helpers removed in favor of real-time Firestore database sync
 
 // ─── Sub-component: Emoji Picker ─────────────────────────────
 function EmojiPicker({ selected, onSelect }) {
@@ -218,15 +207,20 @@ function FamilySetup({ onComplete }) {
     setMembers(prev => prev.filter((_, i) => i !== index))
   }
 
-  const handleSave = () => {
-    if (!familyName.trim() || members.length === 0) return
+  const { user } = useAuth()
+  const handleSave = async () => {
+    if (!familyName.trim() || members.length === 0 || !user) return
     const config = {
       familyId: `family_${Date.now()}`,
       familyName: familyName.trim(),
       members,
     }
-    saveFamily(config)
-    onComplete(config)
+    try {
+      await setDoc(doc(db, 'users', user.uid, 'config', 'family'), config)
+      onComplete(config)
+    } catch (err) {
+      console.error("Error saving family config:", err)
+    }
   }
 
   const dtForMember = (type) => DASHBOARD_TYPES.find(d => d.value === type)
@@ -239,12 +233,9 @@ function FamilySetup({ onComplete }) {
       <div className="w-full max-w-xl relative z-10">
         {/* Header */}
         <div className="text-center mb-8">
-          <span
-            className="text-3xl font-black tracking-tight"
-            style={{ background: 'linear-gradient(90deg, #60A5FA, #A78BFA, #F472B6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
-          >
-            Famly
-          </span>
+          <div className="flex items-center justify-center">
+            <img src={logo} alt="Famly" className="h-8 object-contain" />
+          </div>
           <h1 className="text-3xl font-bold text-slate-100 mt-2">Set up your family</h1>
           <p className="text-slate-400 text-sm mt-1">Create your family workspace in 2 minutes</p>
         </div>
@@ -368,13 +359,8 @@ export default function ProfileSelection({ onSelect, familyConfig, onManageFamil
 
       {/* Header */}
       <div className="fade-in mb-10 text-center relative z-10">
-        <div className="inline-flex items-center gap-3 mb-4">
-          <span
-            className="text-3xl font-black tracking-tight"
-            style={{ background: 'linear-gradient(90deg, #60A5FA, #A78BFA, #F472B6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
-          >
-            Famly
-          </span>
+        <div className="flex items-center justify-center mb-4">
+          <img src={logo} alt="Famly" className="h-8 object-contain" />
         </div>
         <h1 className="text-4xl sm:text-5xl font-bold text-slate-100 tracking-tight">
           Who is tracking?
@@ -453,9 +439,40 @@ export default function ProfileSelection({ onSelect, familyConfig, onManageFamil
 
 // ─── Root wrapper exported to App.jsx ────────────────────────
 export function ProfileSelectionRoot({ onSelect }) {
-  // Use lazy initializer so localStorage is read synchronously on mount — no flicker
-  const [familyConfig, setFamilyConfig] = useState(() => loadFamily())
+  const { user } = useAuth()
+  const [familyConfig, setFamilyConfig] = useState(null)
+  const [loading, setLoading] = useState(true)
   const [managing, setManaging] = useState(false)
+
+  useEffect(() => {
+    if (!user) {
+      setLoading(false)
+      return
+    }
+    const docRef = doc(db, 'users', user.uid, 'config', 'family')
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        setFamilyConfig(docSnap.data())
+      } else {
+        setFamilyConfig(null)
+      }
+      setLoading(false)
+    }, (err) => {
+      console.error("Firestore family config sync error:", err)
+      setLoading(false)
+    })
+
+    return () => unsubscribe()
+  }, [user])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#090A0F] flex flex-col items-center justify-center font-sans">
+        <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        <p className="text-slate-400 text-xs mt-3 uppercase tracking-widest font-bold">Syncing Family Ledger...</p>
+      </div>
+    )
+  }
 
   // First-time setup or managing existing family
   if (!familyConfig || managing) {

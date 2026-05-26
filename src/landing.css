@@ -1,0 +1,53 @@
+/* src/landing.css
+   Carbon/Shadcn inspired styles for Famly Marketing Landing Page
+   ─────────────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Main font helper */
+.font-sans-inter {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Floating mockup dashboard preview */
+@keyframes lp-mock-float {
+  0%, 100% { transform: translateY(0px) rotateX(0deg); }
+  50% { transform: translateY(-10px) rotateX(0.5deg); }
+}
+
+.animate-lp-float {
+  animation: lp-mock-float 6s ease-in-out infinite;
+}
+
+/* Soft color text gradient */
+.lp-gradient-text {
+  background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 50%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Dynamic glow background effects */
+.lp-radial-glow {
+  background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.1) 0%, transparent 60%);
+}
+
+.lp-radial-banner {
+  background: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.08) 0%, transparent 60%);
+}
+
+/* Custom table & grid scrollbars */
+.lp-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.lp-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.lp-scrollbar::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+.lp-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { TrendingUp, Home, PlusCircle, Calendar, Edit2, Plus, Trash2 } from 'lucide-react'
+import { useSyncedState } from '../../hooks/useSyncedState'
 
 function fmt(n) {
   return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP', maximumFractionDigits: 0 }).format(n)
@@ -67,31 +68,16 @@ function MiniBar({ value, max, month }) {
 }
 
 export default function MilestoneDashboard({ profile }) {
-  const storageKey = `famly_milestone_${profile.id}`
+  const storageKey = `milestone_${profile.id}`
 
-  // Load from localStorage or use blank state template
-  const [goal, setGoal] = useState(() => {
-    const saved = localStorage.getItem(storageKey)
-    if (saved) {
-      try {
-        return JSON.parse(saved)
-      } catch (e) {
-        console.error(e)
-      }
-    }
-    return {
-      name: '',
-      target: 0,
-      saved: 0,
-      monthlyContribution: 0,
-      targetDate: '',
-      contributions: [],
-    }
+  const [goal, setGoal, loading] = useSyncedState(storageKey, {
+    name: '',
+    target: 0,
+    saved: 0,
+    monthlyContribution: 0,
+    targetDate: '',
+    contributions: [],
   })
-
-  useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify(goal))
-  }, [goal, storageKey])
 
   // Modals & Form states
   const [showGoalModal, setShowGoalModal] = useState(false)
@@ -162,6 +148,21 @@ export default function MilestoneDashboard({ profile }) {
   const remaining = Math.max(0, goal.target - goal.saved)
   const monthsLeft = goal.monthlyContribution > 0 ? Math.ceil(remaining / goal.monthlyContribution) : 0
   const maxContrib = goal.contributions.length > 0 ? Math.max(...goal.contributions.map(c => c.amount)) : 0
+
+  if (loading) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-6">
+        <div className="animate-pulse flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-2">
+            <div className="h-7 w-48 bg-slate-800 rounded" />
+            <div className="h-4 w-72 bg-slate-800 rounded" />
+          </div>
+          <div className="h-8 w-32 bg-slate-800 rounded" />
+        </div>
+        <div className="animate-pulse bg-slate-900 border border-slate-800 rounded-2xl h-80" />
+      </div>
+    )
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-6">

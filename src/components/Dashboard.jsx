@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import logo from '../assets/famly.png'
 import {
   ArrowLeftRight, Home, BookOpen, Target, CreditCard,
   Settings, ChevronRight, User, TrendingUp, ChevronDown, BarChart2, Briefcase, Award
@@ -115,10 +116,8 @@ export default function Dashboard({ profile, onSwitch }) {
         } lg:translate-x-0 lg:static lg:z-auto`}
       >
         {/* Brand Logo Header */}
-        <div className="p-6 border-b border-slate-900">
-          <span className="text-sm font-black tracking-widest text-slate-100 select-none">
-            Famly
-          </span>
+        <div className="p-6 border-b border-[#16181D] flex items-center">
+          <img src={logo} alt="Famly" className="h-5 object-contain select-none" />
         </div>
 
         {/* Navigation list */}
@@ -227,7 +226,9 @@ export default function Dashboard({ profile, onSwitch }) {
       <div className="flex-1 flex flex-col min-w-0 bg-slate-950">
         {/* Mobile Header Bar */}
         <header className="lg:hidden sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-slate-850 px-6 py-4 flex items-center justify-between">
-          <span className="text-sm font-black tracking-widest text-slate-200 select-none">Famly</span>
+          <div className="flex items-center">
+            <img src={logo} alt="Famly" className="h-5 object-contain select-none" />
+          </div>
           
           <div className="flex items-center gap-3">
             <button

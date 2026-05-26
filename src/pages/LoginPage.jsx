@@ -1,8 +1,10 @@
 // src/pages/LoginPage.jsx
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import logo from '../assets/famly.png'
 
-export default function LoginPage({ onSwitchToRegister }) {
+export default function LoginPage({ onSwitchToRegister, onBack }) {
+
   const { login } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -24,36 +26,43 @@ export default function LoginPage({ onSwitchToRegister }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden">
+    <div className="min-h-screen bg-[#090A0F] flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden font-sans">
       {/* Background glow */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.06) 0%, transparent 60%)' }}
+        style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.05) 0%, transparent 60%)' }}
       />
 
       <div className="w-full max-w-sm relative z-10">
+        {/* Back link */}
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="text-slate-500 hover:text-slate-300 text-sm flex items-center gap-1 mb-6 transition-colors active:scale-95 duration-75"
+          >
+            ← Back to home
+          </button>
+        )}
+
         {/* Logo */}
         <div className="text-center mb-8">
-          <span
-            className="text-3xl font-black tracking-tight"
-            style={{ background: 'linear-gradient(90deg, #60A5FA, #A78BFA, #F472B6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
-          >
-            Famly
-          </span>
-          <h1 className="text-2xl font-bold text-slate-100 mt-2">Welcome back</h1>
-          <p className="text-slate-400 text-sm mt-1">Sign in to your family dashboard</p>
+          <div className="flex items-center justify-center mb-1">
+            <img src={logo} alt="Famly" className="h-8 object-contain" />
+          </div>
+          <h1 className="text-xl font-semibold text-slate-200 mt-2">Welcome back</h1>
+          <p className="text-slate-400 text-xs mt-1">Sign in to your family ledger dashboard</p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-[#16181D] border border-slate-800/60 rounded-xl p-6 space-y-4 shadow-xl">
           {error && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-sm text-red-400">
+            <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2.5 text-xs text-red-400">
               {error}
             </div>
           )}
 
           <div>
-            <label className="text-xs font-medium text-slate-400 block mb-1.5">Email address</label>
+            <label className="text-xs font-semibold text-slate-400 block mb-1.5">Email address</label>
             <input
               id="login-email"
               type="email"
@@ -62,12 +71,12 @@ export default function LoginPage({ onSwitchToRegister }) {
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full bg-[#090A0F] border border-slate-800/60 rounded-lg px-3.5 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500/80 transition-colors"
             />
           </div>
 
           <div>
-            <label className="text-xs font-medium text-slate-400 block mb-1.5">Password</label>
+            <label className="text-xs font-semibold text-slate-400 block mb-1.5">Password</label>
             <input
               id="login-password"
               type="password"
@@ -76,7 +85,7 @@ export default function LoginPage({ onSwitchToRegister }) {
               value={password}
               onChange={e => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full bg-[#090A0F] border border-slate-800/60 rounded-lg px-3.5 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500/80 transition-colors"
             />
           </div>
 
@@ -84,28 +93,30 @@ export default function LoginPage({ onSwitchToRegister }) {
             id="login-submit"
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-60"
-            style={{ background: 'linear-gradient(135deg, #3B82F6, #8B5CF6)' }}
+            className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-semibold transition-all active:scale-95 duration-75 shadow-sm disabled:opacity-60"
           >
             {loading ? 'Signing in…' : 'Sign In'}
           </button>
         </form>
 
         {/* Switch to register */}
-        <p className="text-center text-sm text-slate-500 mt-5">
+        <p className="text-center text-xs text-slate-500 mt-5">
           No account yet?{' '}
           <button
             id="switch-to-register"
             onClick={onSwitchToRegister}
-            className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+            className="text-blue-400 hover:text-blue-300 font-semibold transition-colors active:scale-95 duration-75"
           >
             Create your family →
           </button>
         </p>
 
         {/* Scripture footer */}
-        <p className="text-center text-slate-600 text-[11px] italic mt-8">
-          "I can do all things through Christ who strengthens me." — Philippians 4:13
+        <p className="text-center text-slate-600 text-[10px] uppercase tracking-widest font-bold mt-8">
+          "I can do all things through Christ who strengthens me."
+        </p>
+        <p className="text-center text-slate-600 text-[10px] mt-0.5">
+          Philippians 4:13
         </p>
       </div>
     </div>

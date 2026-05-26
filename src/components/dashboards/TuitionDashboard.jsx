@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { AlertTriangle, BookOpen, CheckCircle2, Clock, Plus, Trash2, Edit2, Check } from 'lucide-react'
+import { AlertTriangle, BookOpen, CheckCircle2, Clock, Plus, Trash2, Edit2, Check, Printer } from 'lucide-react'
+import { useSyncedState } from '../../hooks/useSyncedState'
 
 function fmt(n) {
   return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP', maximumFractionDigits: 0 }).format(n)
@@ -17,39 +18,22 @@ function ProgressBar({ pct, color }) {
 }
 
 export default function TuitionDashboard({ profile }) {
-  const storageKey = `famly_tuition_${profile.id}`
+  const storageKey = `tuition_${profile.id}`
 
-  // Load from localStorage or use blank state template
-  const [data, setData] = useState(() => {
-    const saved = localStorage.getItem(storageKey)
-    if (saved) {
-      try {
-        return JSON.parse(saved)
-      } catch (e) {
-        console.error(e)
-      }
-    }
-    // Default: blank slate for new users
-    return {
-      school: '',
-      degree: '',
-      year: '',
-      schoolStart: '',
-      color: 'blue',
-      historicalUnpaid: [],
-      currentSemester: {
-        label: '',
-        totalAssessment: 0,
-        downpayment: { required: 0, paid: 0 },
-        installments: [],
-      },
-    }
+  const [data, setData, loading] = useSyncedState(storageKey, {
+    school: '',
+    degree: '',
+    year: '',
+    schoolStart: '',
+    color: 'blue',
+    historicalUnpaid: [],
+    currentSemester: {
+      label: '',
+      totalAssessment: 0,
+      downpayment: { required: 0, paid: 0 },
+      installments: [],
+    },
   })
-
-  // Sync with localStorage
-  useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify(data))
-  }, [data, storageKey])
 
   // Form states
   const [showSchoolModal, setShowSchoolModal] = useState(false)
@@ -207,6 +191,22 @@ export default function TuitionDashboard({ profile }) {
     ? { badge: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30', bar: 'bg-cyan-500' }
     : { badge: 'bg-blue-500/15 text-blue-400 border-blue-500/30', bar: 'bg-blue-500' }
 
+  if (loading) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-6">
+        <div className="animate-pulse flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-2">
+            <div className="h-7 w-48 bg-slate-800 rounded" />
+            <div className="h-4 w-72 bg-slate-800 rounded" />
+          </div>
+          <div className="h-8 w-32 bg-slate-800 rounded" />
+        </div>
+        <div className="animate-pulse bg-slate-900 border border-slate-800 rounded-2xl h-48" />
+        <div className="animate-pulse bg-slate-900 border border-slate-800 rounded-2xl h-56" />
+      </div>
+    )
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-6">
       {/* Header */}
@@ -220,10 +220,16 @@ export default function TuitionDashboard({ profile }) {
             {data.school} &nbsp;·&nbsp; {data.degree} &nbsp;·&nbsp; {data.year}
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 no-print">
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-all active:scale-95 duration-75"
+          >
+            <Printer size={12} /> Print Summary
+          </button>
           <button
             onClick={openSchoolModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-all active:scale-95 duration-75"
           >
             <Edit2 size={12} /> Edit School Info
           </button>

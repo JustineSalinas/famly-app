@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { CreditCard, TrendingDown, AlertCircle, ChevronDown, ChevronUp, Trash2, Plus } from 'lucide-react'
+import { CreditCard, TrendingDown, AlertCircle, ChevronDown, ChevronUp, Trash2, Plus, Printer } from 'lucide-react'
+import { useSyncedState } from '../../hooks/useSyncedState'
 
 function fmt(n) {
   return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP', maximumFractionDigits: 0 }).format(n)
@@ -20,25 +21,9 @@ function StatusBadge({ status }) {
 }
 
 export default function DebtDashboard({ profile }) {
-  const storageKey = `famly_debt_${profile.id}`
+  const storageKey = `debt_${profile.id}`
 
-  // Load from localStorage or use blank state template
-  const [debts, setDebts] = useState(() => {
-    const saved = localStorage.getItem(storageKey)
-    if (saved) {
-      try {
-        return JSON.parse(saved)
-      } catch (e) {
-        console.error(e)
-      }
-    }
-    // Default: empty slate for new users
-    return []
-  })
-
-  useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify(debts))
-  }, [debts, storageKey])
+  const [debts, setDebts, loading] = useSyncedState(storageKey, [])
 
   // Form & UI States
   const [expandedRows, setExpandedRows] = useState({})
@@ -146,6 +131,26 @@ export default function DebtDashboard({ profile }) {
   const totalMonthly = debts.reduce((s, d) => s + d.monthlyPayment, 0)
   const overdueCount = debts.filter(d => d.status === 'OVERDUE').length
 
+  if (loading) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
+        <div className="animate-pulse flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-2">
+            <div className="h-7 w-48 bg-slate-800 rounded" />
+            <div className="h-4 w-72 bg-slate-800 rounded" />
+          </div>
+          <div className="h-8 w-32 bg-slate-800 rounded" />
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 animate-pulse">
+          {[1,2,3,4].map(x => (
+            <div key={x} className="bg-slate-900 border border-slate-800 rounded-xl h-20" />
+          ))}
+        </div>
+        <div className="animate-pulse bg-slate-900 border border-slate-800 rounded-2xl h-56" />
+      </div>
+    )
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
       {/* Header */}
@@ -157,10 +162,16 @@ export default function DebtDashboard({ profile }) {
           </h2>
           <p className="text-slate-400 text-sm mt-1">{profile.name}'s active debt obligations</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 no-print">
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-all active:scale-95 duration-75"
+          >
+            <Printer size={12} /> Print Summary
+          </button>
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-rose-500/20 bg-rose-500/10 hover:bg-rose-500/25 text-rose-400 text-xs font-semibold transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-rose-500/20 bg-rose-500/10 hover:bg-rose-500/25 text-rose-400 text-xs font-semibold transition-all active:scale-95 duration-75"
           >
             <Plus size={12} /> Add Debt Record
           </button>
