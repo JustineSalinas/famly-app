@@ -26,7 +26,7 @@ import '../landing.css'
 import AnimatedTextCycle from '../components/ui/AnimatedTextCycle'
 import FamlyFeatures from '../components/ui/FamlyFeatures'
 
-export default function LandingPage({ onGetStarted }) {
+export default function LandingPage({ onGetStarted, user, onLogout }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [currency, setCurrency] = useState('PHP') // 'PHP' | 'USD'
   const [openFaq, setOpenFaq] = useState(null) // index of open FAQ item
@@ -68,19 +68,42 @@ export default function LandingPage({ onGetStarted }) {
 
           {/* Auth buttons (desktop) */}
           <div className="hidden md:flex items-center justify-end gap-3 md:flex-1">
-            <button
-              onClick={() => onGetStarted('login')}
-              className="px-3.5 py-1.5 text-slate-400 hover:text-slate-200 text-xs font-semibold rounded-lg hover:bg-slate-800/30 transition-all active:scale-95 duration-75"
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => onGetStarted('register', 'STARTER')}
-              className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-all active:scale-95 duration-75 shadow-md shadow-blue-900/10 border border-blue-500/10 flex items-center gap-1"
-            >
-              Start Free
-              <ArrowUpRight size={13} />
-            </button>
+            {user ? (
+              <>
+                <span className="text-xs text-slate-400 font-medium mr-2">
+                  Signed in as <strong className="text-slate-200">{user.displayName || user.email}</strong> ({user.plan})
+                </span>
+                <button
+                  onClick={() => onGetStarted('app')}
+                  className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-all active:scale-95 duration-75 shadow-md shadow-blue-900/10 border border-blue-500/10 flex items-center gap-1 cursor-pointer"
+                >
+                  Enter Workspace
+                  <ArrowUpRight size={13} />
+                </button>
+                <button
+                  onClick={onLogout}
+                  className="px-3.5 py-1.5 text-slate-400 hover:text-slate-200 text-xs font-semibold rounded-lg hover:bg-slate-800/30 transition-all active:scale-95 duration-75 cursor-pointer"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => onGetStarted('login')}
+                  className="px-3.5 py-1.5 text-slate-400 hover:text-slate-200 text-xs font-semibold rounded-lg hover:bg-slate-800/30 transition-all active:scale-95 duration-75"
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => onGetStarted('register', 'STARTER')}
+                  className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-all active:scale-95 duration-75 shadow-md shadow-blue-900/10 border border-blue-500/10 flex items-center gap-1"
+                >
+                  Start Free
+                  <ArrowUpRight size={13} />
+                </button>
+              </>
+            )}
           </div>
 
           {/* Mobile hamburger button */}
@@ -102,26 +125,52 @@ export default function LandingPage({ onGetStarted }) {
             <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="hover:text-slate-200 transition-colors">Pricing</a>
           </nav>
           <div className="h-px bg-slate-800/60 w-full" />
-          <div className="flex gap-2">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false)
-                onGetStarted('login')
-              }}
-              className="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg transition-all active:scale-95 duration-75"
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false)
-                onGetStarted('register', 'STARTER')
-              }}
-              className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-all active:scale-95 duration-75 text-center shadow-sm"
-            >
-              Start Free
-            </button>
-          </div>
+          {user ? (
+            <div className="flex flex-col gap-2 w-full">
+              <div className="text-xs text-slate-400 text-center mb-1">
+                Signed in as <strong className="text-slate-200">{user.displayName || user.email}</strong> ({user.plan})
+              </div>
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false)
+                  onGetStarted('app')
+                }}
+                className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-all active:scale-95 duration-75 text-center shadow-sm cursor-pointer"
+              >
+                Enter Workspace
+              </button>
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false)
+                  onLogout()
+                }}
+                className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-255 text-xs font-semibold rounded-lg transition-all active:scale-95 duration-75 cursor-pointer"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false)
+                  onGetStarted('login')
+                }}
+                className="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg transition-all active:scale-95 duration-75"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false)
+                  onGetStarted('register', 'STARTER')
+                }}
+                className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-all active:scale-95 duration-75 text-center shadow-sm"
+              >
+                Start Free
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -159,6 +208,23 @@ export default function LandingPage({ onGetStarted }) {
 
           {/* CTA Buttons */}
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 mt-8 w-full">
+            {user ? (
+              <button
+                onClick={() => onGetStarted('app')}
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all active:scale-95 duration-75 shadow-lg flex items-center gap-1.5 cursor-pointer"
+              >
+                Enter Workspace
+                <ArrowUpRight size={14} />
+              </button>
+            ) : (
+              <button
+                onClick={() => onGetStarted('register', 'STARTER')}
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all active:scale-95 duration-75 shadow-lg flex items-center gap-1.5 cursor-pointer"
+              >
+                Start Free Sandbox
+                <ArrowUpRight size={14} />
+              </button>
+            )}
             <a
               href="#how-it-works"
               className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-950 text-sm font-bold rounded-xl transition-all active:scale-95 duration-75 shadow-lg flex items-center gap-1.5"
@@ -564,14 +630,20 @@ export default function LandingPage({ onGetStarted }) {
               {/* CTA button */}
               <button
                 id={`${plan.id}-cta`}
-                onClick={() => onGetStarted(plan.ctaAction, plan.tier)}
-                className={`w-full py-2.5 rounded-lg text-xs font-bold transition-all active:scale-95 duration-75 mb-6 ${
+                onClick={() => {
+                  if (user) {
+                    onGetStarted('app')
+                  } else {
+                    onGetStarted(plan.ctaAction, plan.tier)
+                  }
+                }}
+                className={`w-full py-2.5 rounded-lg text-xs font-bold transition-all active:scale-95 duration-75 mb-6 cursor-pointer ${
                   plan.featured
                     ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 border border-blue-500/10'
                     : 'bg-[#16181D] hover:bg-slate-800 text-slate-200 border border-slate-700/60'
                 }`}
               >
-                {plan.cta}
+                {user ? (user.plan === plan.tier ? 'Current Plan — Enter Workspace' : 'Enter Workspace') : plan.cta}
               </button>
 
               {/* Feature divider */}
@@ -650,10 +722,10 @@ export default function LandingPage({ onGetStarted }) {
               Start taking charge of your finances, eliminating debt backlogs, and hitting savings milestones.
             </p>
             <button
-              onClick={() => onGetStarted('register')}
-              className="mt-8 px-6 py-3 bg-white hover:bg-slate-100 text-black text-sm font-bold rounded-xl transition-all active:scale-95 duration-75 shadow-lg shadow-white/5"
+              onClick={() => onGetStarted(user ? 'app' : 'register')}
+              className="mt-8 px-6 py-3 bg-white hover:bg-slate-100 text-black text-sm font-bold rounded-xl transition-all active:scale-95 duration-75 shadow-lg shadow-white/5 cursor-pointer"
             >
-              Get Started
+              {user ? 'Enter Workspace' : 'Get Started'}
             </button>
           </div>
         </div>

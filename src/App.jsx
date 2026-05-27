@@ -1,4 +1,4 @@
-import { useState, Component } from 'react'
+import { useState, useEffect, Component } from 'react'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { ProfileSelectionRoot } from './components/ProfileSelection'
 import Dashboard from './components/Dashboard'
@@ -7,11 +7,21 @@ import RegisterPage from './pages/RegisterPage'
 import LandingPage from './pages/LandingPage'
 
 function AppInner() {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
   const [selectedProfile, setSelectedProfile] = useState(null)
-  // 'landing' | 'login' | 'register'
+  // 'landing' | 'login' | 'register' | 'app'
   const [authMode, setAuthMode] = useState('landing')
   const [selectedPlan, setSelectedPlan] = useState('STARTER')
+
+  // Auto-route to app on login/register success, and back to landing on sign out
+  useEffect(() => {
+    if (user !== null && (authMode === 'login' || authMode === 'register')) {
+      setAuthMode('app')
+    }
+    if (user === null && authMode === 'app') {
+      setAuthMode('landing')
+    }
+  }, [user, authMode])
 
   // Still checking auth state (Firebase onAuthStateChanged hasn't fired yet)
   if (user === undefined) {
@@ -23,8 +33,8 @@ function AppInner() {
     )
   }
 
-  // Already logged in → skip landing & auth
-  if (user !== null) {
+  // If logged in AND authMode is 'app', enter the profile/dashboard workspace
+  if (user !== null && authMode === 'app') {
     if (selectedProfile === null) {
       return <ProfileSelectionRoot onSelect={setSelectedProfile} />
     }
@@ -36,13 +46,21 @@ function AppInner() {
     )
   }
 
-  // Not logged in → show landing / auth
+  // Not logged in OR authMode is not 'app' → show landing / auth pages
   if (authMode === 'landing') {
     return (
-      <LandingPage onGetStarted={(mode = 'login', plan = 'STARTER') => {
-        setAuthMode(mode)
-        setSelectedPlan(plan)
-      }} />
+      <LandingPage
+        user={user}
+        onLogout={logout}
+        onGetStarted={(mode = 'login', plan = 'STARTER') => {
+          if (mode === 'app') {
+            setAuthMode('app')
+          } else {
+            setAuthMode(mode)
+            setSelectedPlan(plan)
+          }
+        }}
+      />
     )
   }
 
