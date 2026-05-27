@@ -207,7 +207,7 @@ function FamilySetup({ onComplete }) {
     setMembers(prev => prev.filter((_, i) => i !== index))
   }
 
-  const { user } = useAuth()
+  const { user, isFirebaseConfigured } = useAuth()
   const handleSave = async () => {
     if (!familyName.trim() || members.length === 0 || !user) return
     const config = {
@@ -216,6 +216,11 @@ function FamilySetup({ onComplete }) {
       members,
     }
     try {
+      if (!isFirebaseConfigured) {
+        localStorage.setItem(`famly_mock_family_config_${user.uid}`, JSON.stringify(config))
+        onComplete(config)
+        return
+      }
       await setDoc(doc(db, 'users', user.uid, 'config', 'family'), config)
       onComplete(config)
     } catch (err) {
@@ -439,7 +444,7 @@ export default function ProfileSelection({ onSelect, familyConfig, onManageFamil
 
 // ─── Root wrapper exported to App.jsx ────────────────────────
 export function ProfileSelectionRoot({ onSelect }) {
-  const { user } = useAuth()
+  const { user, isFirebaseConfigured } = useAuth()
   const [familyConfig, setFamilyConfig] = useState(null)
   const [loading, setLoading] = useState(true)
   const [managing, setManaging] = useState(false)
@@ -449,6 +454,22 @@ export function ProfileSelectionRoot({ onSelect }) {
       setLoading(false)
       return
     }
+
+    if (!isFirebaseConfigured) {
+      const localVal = localStorage.getItem(`famly_mock_family_config_${user.uid}`)
+      if (localVal !== null) {
+        try {
+          setFamilyConfig(JSON.parse(localVal))
+        } catch (e) {
+          setFamilyConfig(null)
+        }
+      } else {
+        setFamilyConfig(null)
+      }
+      setLoading(false)
+      return
+    }
+
     const docRef = doc(db, 'users', user.uid, 'config', 'family')
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
@@ -463,7 +484,7 @@ export function ProfileSelectionRoot({ onSelect }) {
     })
 
     return () => unsubscribe()
-  }, [user])
+  }, [user, isFirebaseConfigured])
 
   if (loading) {
     return (

@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import logo from '../assets/famly.png'
 
 export default function RegisterPage({ onSwitchToLogin }) {
-  const { register } = useAuth()
+  const { register, isFirebaseConfigured } = useAuth()
   const [familyName, setFamilyName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -56,6 +56,12 @@ export default function RegisterPage({ onSwitchToLogin }) {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="bg-[#16181D] border border-slate-800/60 rounded-xl p-6 space-y-4 shadow-xl">
+          {!isFirebaseConfigured && (
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg px-4 py-2.5 text-[11px] text-blue-400 leading-relaxed">
+              ⚡ <strong>Demo Mode Active</strong>: Firebase configuration is missing in <code className="bg-[#090A0F] px-1 py-0.5 rounded text-[10px] text-slate-300">.env</code>. Running locally via LocalStorage.
+            </div>
+          )}
+
           {error && (
             <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2.5 text-xs text-red-400">
               {error}

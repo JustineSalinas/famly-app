@@ -17,8 +17,26 @@ const firebaseConfig = {
   appId:             import.meta.env.VITE_FIREBASE_APP_ID             || 'PASTE_APP_ID_HERE',
 }
 
-const app = initializeApp(firebaseConfig)
+const isFirebaseConfigured = !!(
+  import.meta.env.VITE_FIREBASE_API_KEY &&
+  import.meta.env.VITE_FIREBASE_API_KEY !== 'your_api_key_here' &&
+  import.meta.env.VITE_FIREBASE_API_KEY !== 'PASTE_API_KEY_HERE'
+)
 
-export const auth = getAuth(app)
-export const db = getFirestore(app)
+let app;
+let auth;
+let db;
+
+if (isFirebaseConfigured) {
+  try {
+    app = initializeApp(firebaseConfig)
+    auth = getAuth(app)
+    db = getFirestore(app)
+  } catch (err) {
+    console.error("Firebase initialization failed:", err)
+  }
+}
+
+export { auth, db, isFirebaseConfigured }
 export default app
+

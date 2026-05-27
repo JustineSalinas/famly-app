@@ -4,12 +4,28 @@ import { db } from '../firebase'
 import { useAuth } from '../context/AuthContext'
 
 export function useSyncedState(key, defaultValue) {
-  const { user } = useAuth()
+  const { user, isFirebaseConfigured } = useAuth()
   const [state, setState] = useState(defaultValue)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!user) {
+      setLoading(false)
+      return
+    }
+
+    if (!isFirebaseConfigured) {
+      const storageKey = `famly_mock_state_${user.uid}_${key}`
+      const localVal = localStorage.getItem(storageKey)
+      if (localVal !== null) {
+        try {
+          setState(JSON.parse(localVal))
+        } catch (e) {
+          setState(defaultValue)
+        }
+      } else {
+        setState(defaultValue)
+      }
       setLoading(false)
       return
     }
@@ -32,10 +48,18 @@ export function useSyncedState(key, defaultValue) {
     )
 
     return () => unsubscribe()
-  }, [user, key])
+  }, [user, key, isFirebaseConfigured])
 
   const updateState = async (newValue) => {
     if (!user) return
+    
+    if (!isFirebaseConfigured) {
+      const storageKey = `famly_mock_state_${user.uid}_${key}`
+      localStorage.setItem(storageKey, JSON.stringify(newValue))
+      setState(newValue)
+      return
+    }
+
     const docRef = doc(db, 'users', user.uid, 'dashboardData', key)
     try {
       await setDoc(docRef, { value: newValue })
