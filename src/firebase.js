@@ -17,7 +17,7 @@ const firebaseConfig = {
   appId:             import.meta.env.VITE_FIREBASE_APP_ID             || 'PASTE_APP_ID_HERE',
 }
 
-const isFirebaseConfigured = !!(
+const configKeysPresent = !!(
   import.meta.env.VITE_FIREBASE_API_KEY &&
   import.meta.env.VITE_FIREBASE_API_KEY !== 'your_api_key_here' &&
   import.meta.env.VITE_FIREBASE_API_KEY !== 'PASTE_API_KEY_HERE'
@@ -26,12 +26,14 @@ const isFirebaseConfigured = !!(
 let app;
 let auth;
 let db;
+let isFirebaseConfigured = false;
 
-if (isFirebaseConfigured) {
+if (configKeysPresent) {
   try {
     app = initializeApp(firebaseConfig)
     auth = getAuth(app)
     db = getFirestore(app)
+    isFirebaseConfigured = !!(auth && db)
   } catch (err) {
     console.error("Firebase initialization failed:", err)
   }

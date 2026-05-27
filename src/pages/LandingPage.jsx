@@ -75,7 +75,7 @@ export default function LandingPage({ onGetStarted }) {
               Sign In
             </button>
             <button
-              onClick={() => onGetStarted('register')}
+              onClick={() => onGetStarted('register', 'STARTER')}
               className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-all active:scale-95 duration-75 shadow-md shadow-blue-900/10 border border-blue-500/10 flex items-center gap-1"
             >
               Start Free
@@ -115,7 +115,7 @@ export default function LandingPage({ onGetStarted }) {
             <button
               onClick={() => {
                 setMobileMenuOpen(false)
-                onGetStarted('register')
+                onGetStarted('register', 'STARTER')
               }}
               className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-all active:scale-95 duration-75 text-center shadow-sm"
             >
@@ -564,7 +564,7 @@ export default function LandingPage({ onGetStarted }) {
               {/* CTA button */}
               <button
                 id={`${plan.id}-cta`}
-                onClick={() => onGetStarted(plan.ctaAction)}
+                onClick={() => onGetStarted(plan.ctaAction, plan.tier)}
                 className={`w-full py-2.5 rounded-lg text-xs font-bold transition-all active:scale-95 duration-75 mb-6 ${
                   plan.featured
                     ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 border border-blue-500/10'

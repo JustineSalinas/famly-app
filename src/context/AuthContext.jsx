@@ -7,7 +7,8 @@ import {
   signOut,
   updateProfile,
 } from 'firebase/auth'
-import { auth, isFirebaseConfigured } from '../firebase'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { auth, db, isFirebaseConfigured } from '../firebase'
 
 const AuthContext = createContext(null)
 
@@ -42,45 +43,83 @@ export function AuthProvider({ children }) {
       return
     }
 
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser)
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        let plan = 'STARTER'
+        try {
+          const docRef = doc(db, 'users', firebaseUser.uid)
+          const docSnap = await getDoc(docRef)
+          if (docSnap.exists()) {
+            plan = docSnap.data().plan || 'STARTER'
+          }
+        } catch (e) {
+          console.error("Firestore user plan sync error:", e)
+        }
+        setUser({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName,
+          plan
+        })
+      } else {
+        setUser(null)
+      }
     })
     return unsubscribe
   }, [])
 
   const login = async (email, password) => {
     if (!isFirebaseConfigured) {
-      const db = getMockDB()
+      const dbMock = getMockDB()
       const normalizedEmail = email.toLowerCase().trim()
-      const mockUser = db[normalizedEmail]
+      const mockUser = dbMock[normalizedEmail]
       if (!mockUser || mockUser.password !== password) {
         const err = new Error('Incorrect email or password.')
         err.code = 'auth/invalid-credential'
         throw err
       }
-      const userSession = { uid: mockUser.uid, email: mockUser.email, displayName: mockUser.displayName }
+      const userSession = { uid: mockUser.uid, email: mockUser.email, displayName: mockUser.displayName, plan: mockUser.plan || 'STARTER' }
       localStorage.setItem('famly_mock_user', JSON.stringify(userSession))
       setUser(userSession)
       return { user: userSession }
     }
-    return signInWithEmailAndPassword(auth, email, password)
+    
+    return signInWithEmailAndPassword(auth, email, password).then(async (cred) => {
+      let plan = 'STARTER'
+      try {
+        const docRef = doc(db, 'users', cred.user.uid)
+        const docSnap = await getDoc(docRef)
+        if (docSnap.exists()) {
+          plan = docSnap.data().plan || 'STARTER'
+        }
+      } catch (err) {
+        console.error("Firestore fetch user plan error:", err)
+      }
+      setUser({
+        uid: cred.user.uid,
+        email: cred.user.email,
+        displayName: cred.user.displayName,
+        plan
+      })
+      return cred
+    })
   }
 
-  const register = async (email, password, displayName) => {
+  const register = async (email, password, displayName, plan = 'STARTER') => {
     if (!isFirebaseConfigured) {
-      const db = getMockDB()
+      const dbMock = getMockDB()
       const normalizedEmail = email.toLowerCase().trim()
-      if (db[normalizedEmail]) {
+      if (dbMock[normalizedEmail]) {
         const err = new Error('An account with this email already exists.')
         err.code = 'auth/email-already-in-use'
         throw err
       }
       const uid = 'mock_' + Math.random().toString(36).substr(2, 9)
-      const newUser = { uid, email: normalizedEmail, password, displayName: displayName || 'Family' }
-      db[normalizedEmail] = newUser
-      saveMockDB(db)
+      const newUser = { uid, email: normalizedEmail, password, displayName: displayName || 'Family', plan }
+      dbMock[normalizedEmail] = newUser
+      saveMockDB(dbMock)
 
-      const userSession = { uid, email: newUser.email, displayName: newUser.displayName }
+      const userSession = { uid, email: newUser.email, displayName: newUser.displayName, plan }
       localStorage.setItem('famly_mock_user', JSON.stringify(userSession))
       setUser(userSession)
       return { user: userSession }
@@ -90,6 +129,17 @@ export function AuthProvider({ children }) {
       if (displayName) {
         await updateProfile(cred.user, { displayName })
       }
+      try {
+        await setDoc(doc(db, 'users', cred.user.uid), { plan })
+      } catch (err) {
+        console.error("Firestore set user plan error:", err)
+      }
+      setUser({
+        uid: cred.user.uid,
+        email: cred.user.email,
+        displayName: displayName || cred.user.displayName,
+        plan
+      })
       return cred
     })
   }

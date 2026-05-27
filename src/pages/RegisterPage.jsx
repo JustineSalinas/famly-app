@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import logo from '../assets/famly.png'
 
-export default function RegisterPage({ onSwitchToLogin }) {
+export default function RegisterPage({ onSwitchToLogin, plan = 'STARTER' }) {
   const { register, isFirebaseConfigured } = useAuth()
   const [familyName, setFamilyName] = useState('')
   const [email, setEmail] = useState('')
@@ -27,7 +27,7 @@ export default function RegisterPage({ onSwitchToLogin }) {
 
     setLoading(true)
     try {
-      await register(email, password, familyName)
+      await register(email, password, familyName, plan)
       // Auth state updates via onAuthStateChanged → App re-renders to show family setup
     } catch (err) {
       setError(getFriendlyError(err.code))
@@ -104,7 +104,7 @@ export default function RegisterPage({ onSwitchToLogin }) {
               autoComplete="new-password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              placeholder="At least 6 characters"
+              placeholder="••••••••"
               className="w-full bg-[#090A0F] border border-slate-800/60 rounded-lg px-3.5 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500/80 transition-colors"
             />
           </div>
@@ -118,16 +118,16 @@ export default function RegisterPage({ onSwitchToLogin }) {
               autoComplete="new-password"
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
-              placeholder="Repeat password"
+              placeholder="••••••••"
               className="w-full bg-[#090A0F] border border-slate-800/60 rounded-lg px-3.5 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500/80 transition-colors"
             />
           </div>
 
           <button
-            id="register-submit"
+            id="register-submit-btn"
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-semibold transition-all active:scale-95 duration-75 shadow-sm disabled:opacity-60"
+            className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold transition-all active:scale-95 duration-75 shadow-md shadow-blue-900/10 border border-blue-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Creating account…' : 'Start Tracking'}
           </button>
