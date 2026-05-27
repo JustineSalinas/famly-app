@@ -19,31 +19,18 @@ import {
   DollarSign,
   TrendingDown,
   GraduationCap,
-  PiggyBank,
-  GitBranch
+  PiggyBank
 } from 'lucide-react'
 import '../landing.css'
-import AnimatedTextCycle from '../components/ui/AnimatedTextCycle'
-import FamlyFeatures from '../components/ui/FamlyFeatures'
+import ScrollStorySection from '../components/ui/ScrollStorySection'
+import FeatureScrollReveal from '../components/ui/FeatureScrollReveal'
+import DashboardScrollPreview from '../components/ui/DashboardScrollPreview'
+import HowItWorksFlow from '../components/ui/HowItWorksFlow'
 
 export default function LandingPage({ onGetStarted, user, onLogout }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [currency, setCurrency] = useState('PHP') // 'PHP' | 'USD'
   const [openFaq, setOpenFaq] = useState(null) // index of open FAQ item
-
-  // Demo profile definitions for hero mockup display
-  const demoProfiles = [
-    { name: 'Mom', emoji: '👩', gradient: 'from-purple-600 to-pink-400' },
-    { name: 'Kuya', emoji: '👦', gradient: 'from-blue-600 to-blue-400' },
-    { name: 'Ate', emoji: '👧', gradient: 'from-emerald-600 to-teal-500' }
-  ]
-
-  // Demo tuition table data for hero mockup display
-  const demoTuitions = [
-    { scholar: 'Kuya', item: 'Downpayment', amount: 35000, date: '06-01', status: 'Paid' },
-    { scholar: 'Bunso', item: 'Monthly Inst.', amount: 8400, date: '05-20', status: 'Overdue' },
-    { scholar: 'Ate', item: 'Semester Fee', amount: 12500, date: '06-15', status: 'Pending' }
-  ]
 
   return (
     <div className="min-h-screen bg-[#090A0F] text-slate-100 font-sans-inter overflow-x-hidden lp-scrollbar relative">
@@ -174,302 +161,17 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
         </div>
       )}
 
-      {/* ─── Hero Section ───────────────────────────────────────────── */}
-      <section className="relative max-w-6xl mx-auto px-6 pt-16 lg:pt-28 pb-16 lg:pb-24 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center z-10">
-        
-        {/* Left Column: Brand & Copy */}
-        <div className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left">
-          {/* Intro Pill */}
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
-            ✨ Netflix-Style Family Sync
-          </div>
+      {/* ─── Hero Section with 3D Scroll Story ───────────────────────── */}
+      <ScrollStorySection currency={currency} onGetStarted={onGetStarted} user={user} />
 
-          {/* Headline */}
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-100 leading-[1.1] max-w-2xl">
-            One place for <br className="hidden sm:inline" />
-            <AnimatedTextCycle 
-              words={[
-                "every family goal.",
-                "conquering debt.",
-                "syncing tuition.",
-                "savings milestones.",
-                "financial peace."
-              ]}
-              interval={3000}
-              className="lp-gradient-text" 
-            />
-          </h1>
+      {/* ─── Features / Value Props Section with 3D Cascade ──────── */}
+      <FeatureScrollReveal />
 
-          {/* Sub-headline */}
-          <p className="text-sm md:text-base text-slate-400 mt-6 leading-relaxed max-w-xl">
-            The shared operating system for Filipino families to conquer multi-creditor debts, manage tuition backlogs, and hit massive saving milestones—all from a single, beautiful dashboard.
-          </p>
+      {/* ─── Live Laptop Simulator / Workspace Preview ────────────── */}
+      <DashboardScrollPreview />
 
-          {/* CTA Buttons */}
-          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 mt-8 w-full">
-            {user ? (
-              <button
-                onClick={() => onGetStarted('app')}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all active:scale-95 duration-75 shadow-lg flex items-center gap-1.5 cursor-pointer"
-              >
-                Enter Workspace
-                <ArrowUpRight size={14} />
-              </button>
-            ) : (
-              <button
-                onClick={() => onGetStarted('register', 'STARTER')}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all active:scale-95 duration-75 shadow-lg flex items-center gap-1.5 cursor-pointer"
-              >
-                Start Free Sandbox
-                <ArrowUpRight size={14} />
-              </button>
-            )}
-            <a
-              href="#how-it-works"
-              className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-950 text-sm font-bold rounded-xl transition-all active:scale-95 duration-75 shadow-lg flex items-center gap-1.5"
-            >
-              See how it works
-              <ChevronRight size={14} />
-            </a>
-            <a
-              href="https://github.com/JustineSalinas/famly-app"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-3 bg-slate-900/60 hover:bg-slate-800/80 text-slate-300 hover:text-slate-100 text-sm font-semibold rounded-xl border border-slate-800 transition-all active:scale-95 duration-75 flex items-center gap-1.5"
-            >
-              <GitBranch size={14} />
-              View GitHub Repo
-            </a>
-          </div>
-        </div>
-
-        {/* Right Column: Phone Preview Mockup Section */}
-        <div className="lg:col-span-5 flex justify-center w-full mt-8 lg:mt-0 relative">
-          <div className="phone-mockup-wrapper">
-            
-            {/* Floating Card 1: On Saves */}
-            <div className="lp-floating-card card-on-saves">
-              <div className="flex items-center gap-1.5 mb-1">
-                <span className="w-2 h-2 rounded-full bg-slate-900" />
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">On Saves</span>
-              </div>
-              <span className="text-sm font-extrabold text-slate-900 tracking-tight">
-                {currency === 'PHP' ? '₱104,002.22' : '$10,400.22'}
-              </span>
-            </div>
-
-            {/* Floating Card 2: Total Expends */}
-            <div className="lp-floating-card card-total-expends">
-              <div className="flex items-center gap-1.5 mb-1">
-                <span className="w-4 h-4 rounded bg-rose-500/10 flex items-center justify-center">
-                  <CreditCard size={10} className="text-rose-500" />
-                </span>
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total Expends</span>
-              </div>
-              <div className="text-sm font-extrabold text-slate-900 tracking-tight">
-                {currency === 'PHP' ? '₱6,590.00' : '$659.00'}
-              </div>
-              <div className="text-[9px] font-semibold text-emerald-600 flex items-center gap-0.5 mt-1">
-                <span>↗</span>
-                <span>5.23% vs last month</span>
-              </div>
-            </div>
-
-            {/* Floating Card 3: Cash Available */}
-            <div className="lp-floating-card card-cash-available">
-              <div className="flex items-center gap-1.5 mb-1">
-                <span className="w-4 h-4 rounded bg-emerald-500/10 flex items-center justify-center">
-                  <PiggyBank size={10} className="text-emerald-500" />
-                </span>
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Cash Available</span>
-              </div>
-              <div className="text-sm font-extrabold text-slate-900 tracking-tight">
-                {currency === 'PHP' ? '₱5,460.00' : '$546.00'}
-              </div>
-              <div className="text-[9px] font-semibold text-rose-500 flex items-center gap-0.5 mt-1">
-                <span>↘</span>
-                <span>5.23% vs last month</span>
-              </div>
-            </div>
-
-            {/* Phone Bezel Container */}
-            <div className="animate-phone-float">
-              <div className="phone-bezel">
-                <div className="phone-dynamic-island" />
-                
-                {/* Screen Wrapper */}
-                <div className="phone-screen">
-                  
-                  {/* Status Bar */}
-                  <div className="phone-status-bar flex justify-between items-center text-slate-800 px-5 pt-1.5 pb-1">
-                    <span className="text-[10px] font-bold tracking-tight text-slate-900">9:41</span>
-                    <div className="flex items-center gap-1.5 text-slate-900">
-                      {/* Signal */}
-                      <svg className="w-3 h-2.5" viewBox="0 0 18 12" fill="currentColor">
-                        <rect x="0" y="9" width="2" height="3" rx="0.5" />
-                        <rect x="3.5" y="7" width="2" height="5" rx="0.5" />
-                        <rect x="7" y="4" width="2" height="8" rx="0.5" />
-                        <rect x="10.5" y="2" width="2" height="10" rx="0.5" />
-                        <rect x="14" y="0" width="2" height="12" rx="0.5" />
-                      </svg>
-                      {/* Wifi */}
-                      <svg className="w-3 h-2.5" viewBox="0 0 16 12" fill="currentColor">
-                        <path d="M8 12a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm-4.2-4.2a6 6 0 0 1 8.4 0l-1.4 1.4a4 4 0 0 0-5.6 0l-1.4-1.4zm-2.8-2.8a10 10 0 0 1 14 0l-1.4 1.4a8 8 0 0 0-11.2 0l-1.4-1.4z" />
-                      </svg>
-                      {/* Battery */}
-                      <div className="flex items-center gap-0.5">
-                        <div className="w-5 h-2.5 border border-slate-900 rounded-[3px] p-[1px] flex items-center">
-                          <div className="bg-slate-900 h-full w-full rounded-[1px]" />
-                        </div>
-                        <div className="w-[1px] h-0.75 bg-slate-900 rounded-r-xs" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* App Screen Content: Debt Dashboard Account */}
-                  <div className="flex-1 flex flex-col pt-3 px-3">
-                    
-                    {/* App Small Title */}
-                    <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-left">
-                      Total Debt Remaining
-                    </div>
-
-                    {/* App Balance Value */}
-                    <div className="text-2xl font-black text-slate-900 tracking-tight mt-0.5 text-left">
-                      {currency === 'PHP' ? '₱375,400' : '$37,540'}
-                    </div>
-
-                    {/* App Tabs Selection */}
-                    <div className="flex gap-1.5 mt-3 bg-slate-200/50 p-1 rounded-xl">
-                      <button className="flex-1 py-1 px-2.5 bg-slate-900 text-white rounded-lg text-[9px] font-bold flex items-center justify-center gap-1 shadow-sm">
-                        <CreditCard size={10} />
-                        Active Ledger
-                      </button>
-                      <button className="flex-1 py-1 px-2.5 text-slate-600 rounded-lg text-[9px] font-bold flex items-center justify-center">
-                        Add Record
-                      </button>
-                    </div>
-
-                    {/* Summary row */}
-                    <div className="grid grid-cols-2 gap-2 mt-3.5">
-                      <div className="bg-white border border-slate-100 rounded-xl p-2 text-left shadow-xs">
-                        <span className="text-[8px] font-semibold text-slate-400 block uppercase">Monthly Due</span>
-                        <span className="text-[11px] font-bold text-slate-800 mt-0.5 block">
-                          {currency === 'PHP' ? '₱16,400' : '$1,640'}
-                        </span>
-                      </div>
-                      <div className="bg-white border border-slate-100 rounded-xl p-2 text-left shadow-xs">
-                        <span className="text-[8px] font-semibold text-slate-400 block uppercase">Overdue</span>
-                        <span className="text-[11px] font-bold text-rose-500 mt-0.5 block flex items-center gap-0.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse shrink-0" />
-                          1 Account
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Active Creditors Obligations */}
-                    <div className="mt-4.5 space-y-3 text-left flex-1">
-                      <div className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
-                        Active Obligations
-                      </div>
-                      
-                      {[
-                        { name: 'BDO Housing Loan', type: 'Mortgage • 7.5%', amount: currency === 'PHP' ? '₱312,000' : '$31,200', status: 'CURRENT', statusColor: 'bg-emerald-100 text-emerald-700' },
-                        { name: 'SSS Calamity Loan', type: 'Govt Loan • 10%', amount: currency === 'PHP' ? '₱18,400' : '$1,840', status: 'OVERDUE', statusColor: 'bg-rose-100 text-rose-600 animate-pulse' },
-                        { name: 'PAGIBIG MP2 Deposit', type: 'Savings Goal', amount: currency === 'PHP' ? '₱45,000' : '$4,500', status: 'CURRENT', statusColor: 'bg-emerald-100 text-emerald-700' }
-                      ].map((item, idx) => (
-                        <div key={idx} className="flex justify-between items-start border-b border-slate-100/60 pb-1">
-                          <div>
-                            <div className="text-[10px] font-bold text-slate-800 leading-none">{item.name}</div>
-                            <div className="text-[8px] font-medium text-slate-400 mt-0.5">{item.type}</div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-[10px] font-black text-slate-900 leading-none">{item.amount}</div>
-                            <span className={`inline-block px-1 py-0.2 rounded-[3px] text-[6.5px] font-bold mt-0.5 ${item.statusColor}`}>
-                              {item.status}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Simple Bottom Bar Indicator & Profile image mock */}
-                    <div className="mt-auto pb-2 pt-3 border-t border-slate-100 flex items-center justify-between text-left">
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-[10px]">
-                          👩
-                        </div>
-                        <div>
-                          <div className="text-[9px] font-bold text-slate-800 leading-none">Mom</div>
-                          <div className="text-[8px] font-medium text-slate-400 mt-0.5">info@howardella.au</div>
-                        </div>
-                      </div>
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 glow-green" />
-                    </div>
-
-                  </div>
-
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* ─── Features / Value Props Section ──────────────────────── */}
-      <FamlyFeatures />
-
-      {/* ─── How It Works Section ───────────────────────────────────── */}
-      <section id="how-it-works" className="max-w-6xl mx-auto px-6 py-16 md:py-24 border-t border-slate-800/40 relative z-10 bg-[#0C0D0F]/30">
-        <div className="text-center max-w-xl mx-auto mb-16">
-          <p className="text-xs font-bold text-blue-500 tracking-widest uppercase">How It Works</p>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-slate-100 mt-2 tracking-tight">
-            Your family's OS, live in minutes
-          </h2>
-          <p className="text-xs md:text-sm text-slate-400 mt-3 leading-relaxed">
-            Four intentional steps from blank slate to full financial clarity—no spreadsheet PhD required.
-          </p>
-        </div>
-
-        {/* Steps */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            {
-              num: '01',
-              title: 'Register your household',
-              desc: 'One secure account becomes the root of your entire family ledger. Firebase Auth keeps credentials encrypted at rest.',
-              accent: 'text-blue-400'
-            },
-            {
-              num: '02',
-              title: 'Build member profiles',
-              desc: 'Give each family member an emoji avatar, a gradient color, and the dashboard type that matches their role—scholar, planner, or admin.',
-              accent: 'text-violet-400'
-            },
-            {
-              num: '03',
-              title: 'Log debts, tuition & goals',
-              desc: 'Enter creditors, semester payment schedules, and savings milestones. Famly structures it all into real-time ledgers automatically.',
-              accent: 'text-emerald-400'
-            },
-            {
-              num: '04',
-              title: 'Stay aligned, always',
-              desc: 'Every update syncs across profiles. Mom sees the debt picture. Kuya tracks his own tuition. Everyone moves in the same direction.',
-              accent: 'text-amber-400'
-            }
-          ].map((step, idx) => (
-            <div key={idx} className="bg-[#0C0D0F] border border-slate-800/60 rounded-2xl p-5 relative overflow-hidden shadow-sm hover:border-slate-700 transition-all">
-              <span className="absolute top-3 right-4 text-5xl font-extrabold text-slate-800/20 font-mono select-none leading-none">{step.num}</span>
-              <div className={`text-xs font-bold uppercase tracking-widest mb-3 ${step.accent}`}>Step {step.num}</div>
-              <h4 className="text-sm font-bold text-slate-100 leading-snug">{step.title}</h4>
-              <p className="text-xs text-slate-400 mt-2 leading-relaxed">{step.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* ─── How It Works Section with 3D Scroll Flow ─────────────────── */}
+      <HowItWorksFlow />
 
 
       {/* ─── Pricing Section ─────────────────────────────────────────── */}
@@ -896,7 +598,6 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
               <ul className="space-y-2">
                 {[
                   { label: 'About', href: '#' },
-                  { label: 'GitHub', href: 'https://github.com/JustineSalinas/famly-app', external: true },
                   { label: 'Changelog', href: '#' },
                 ].map((l) => (
                   <li key={l.label}>

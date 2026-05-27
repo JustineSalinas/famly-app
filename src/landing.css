@@ -209,3 +209,48 @@
   background: #334155;
 }
 
+/* ─── Apple-style 3D Scroll Story additions ─── */
+html {
+  scroll-behavior: smooth;
+}
+
+.scroll-story-outer {
+  position: relative;
+  height: 350vh; /* gives tight, accurate room for scroll sequence steps */
+}
+
+.scroll-story-sticky {
+  position: sticky;
+  top: 80px; /* sticks below the header */
+  height: calc(100vh - 80px);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+/* Glowing green badge helper */
+.glow-green {
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+}
+
+/* ─── Google Flow Step Process Layout ─── */
+.how-it-works-outer {
+  position: relative;
+  height: 410vh; /* 4 steps, each step takes ~100vh scroll range */
+}
+
+.how-it-works-sticky {
+  position: sticky;
+  top: 80px; /* sticks below the header */
+  height: calc(100vh - 80px);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
