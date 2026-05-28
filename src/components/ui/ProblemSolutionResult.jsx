@@ -1,143 +1,172 @@
-import { motion } from 'framer-motion'
-import { AlertCircle, CheckCircle2, ShieldCheck, HelpCircle } from 'lucide-react'
+import { useRef, useState, useEffect } from 'react'
+import { motion, useInView } from 'framer-motion'
 
 export default function ProblemSolutionResult() {
-  const cards = [
+  const [activeStep, setActiveStep] = useState(0)
+  const containerRef = useRef(null)
+
+  const steps = [
     {
-      title: "The Problem",
-      subtitle: "BSP 2025 CFIS Research Data",
-      icon: AlertCircle,
-      color: "from-rose-500/20 to-red-500/5 border-rose-500/20",
-      glow: "rgba(239, 68, 68, 0.05)",
-      badgeColor: "bg-rose-500/10 text-rose-400 border-rose-500/20",
-      content: (
-        <div className="space-y-4">
-          <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-extrabold text-rose-400 tracking-tight">34%</span>
-            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">of Borrowers Struggle</span>
-          </div>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            According to the Bangko Sentral ng Pilipinas (BSP) 2025 Consumer Finance and Inclusion Survey, over a third of Filipino borrowers report severe difficulty making repayments, with <strong className="text-slate-200">8% falling into debt traps</strong> (borrowing from new lenders to service old loans) due to a complete lack of shared visibility.
-          </p>
-          <div className="p-2.5 rounded-lg bg-slate-950/40 border border-rose-500/10 flex items-start gap-2">
-            <span className="text-xs shrink-0 mt-0.5">⚠️</span>
-            <p className="text-[10.5px] text-rose-300/80 leading-snug">
-              Tuition backlogs &amp; daily family operations are managed in scattered Messenger chats, leading to late penalties and family stress.
-            </p>
-          </div>
-        </div>
-      )
+      category: "Challenge",
+      colorClass: "text-rose-500/90",
+      headline: "Scattered tracking & structural debt traps",
+      highlightText: "Over 34% of Filipino borrowers face repayment crises, with 8% falling into debt loops.",
+      body: "According to the Bangko Sentral ng Pilipinas (BSP) 2025/2026 data, households lack centralized financial visibility. Tuition deadlines, calamity loans, and family expenses are managed in scattered Messenger threads or paper lists, leading to late penalties and mounting household friction.",
+      subText: "We also needed a system that replaces the traditional high-stress 'listahan' with a clean, shared roadmap.",
+      highlightStyle: "bg-rose-500/10 text-rose-300 border-rose-500/20"
     },
     {
-      title: "The Solution",
-      subtitle: "A Centralized Family Ledger OS",
-      icon: ShieldCheck,
-      color: "from-blue-500/20 to-indigo-500/5 border-blue-500/20",
-      glow: "rgba(59, 130, 246, 0.05)",
-      badgeColor: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-      content: (
-        <div className="space-y-4">
-          <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-extrabold text-blue-400 tracking-tight">100%</span>
-            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Real-Time Sync</span>
-          </div>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Famly replaces notebooks and chats with a secure, real-time shared database. By connecting the whole household under a single secure login, every payment obligation is clear, transparent, and structured.
-          </p>
-          <div className="p-2.5 rounded-lg bg-slate-950/40 border border-blue-500/10 flex items-start gap-2">
-            <span className="text-xs shrink-0 mt-0.5">💡</span>
-            <p className="text-[10.5px] text-blue-300/80 leading-snug">
-              Every family member gets their own Netflix-style profile. Mom tracks the mortgage, scholars see their semesters, Ate runs the planner.
-            </p>
-          </div>
-        </div>
-      )
+      category: "Solution",
+      colorClass: "text-blue-500/90",
+      headline: "A unified operating ledger for the household",
+      highlightText: "Famly structures every obligation under a secure, real-time shared workspace.",
+      body: "Our work connects every family member under a centralized Firestore database, enabling dedicated modules for tuition, milestone goals, active liabilities, and monthly subscription utility checkouts. Everyone coordinates in real time.",
+      subText: "Netflix-style profile switching grants individuals agency over their specific financial dashboards.",
+      highlightStyle: "bg-blue-500/10 text-blue-300 border-blue-500/20"
     },
     {
-      title: "The Result",
-      subtitle: "Financial Alignment & Growth",
-      icon: CheckCircle2,
-      color: "from-emerald-500/20 to-teal-500/5 border-emerald-500/20",
-      glow: "rgba(16, 185, 129, 0.05)",
-      badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-      content: (
-        <div className="space-y-4">
-          <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-extrabold text-emerald-400 tracking-tight">0%</span>
-            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Missed Deadlines</span>
-          </div>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            By shifting from manual notebooks to visual, automated payment pathways, households build a stable runway. Families clear debt interest backlogs, hit savings targets, and establish educational security together.
-          </p>
-          <div className="p-2.5 rounded-lg bg-slate-950/40 border border-emerald-500/10 flex items-start gap-2">
-            <span className="text-xs shrink-0 mt-0.5">✅</span>
-            <p className="text-[10.5px] text-emerald-300/80 leading-snug">
-              15-minute average response time on GCC/setup issues, backed by PayMongo payment pathways accepting GCash, Maya, and local cards.
-            </p>
-          </div>
-        </div>
-      )
+      category: "Result",
+      colorClass: "text-emerald-500/90",
+      headline: "Predictable runways & zero missed deadlines",
+      highlightText: "Obligations are cleared automatically, preventing late interest build-ups.",
+      body: "By moving from scattered manual checks to visual payment pathways, households build a stable financial runway. Families hit milestone savings buffers, secure school terms, and eliminate late payment penalties together.",
+      subText: "Philippine paymentsGCash, Maya, cardsare handled securely with integrated PayMongo pathways.",
+      highlightStyle: "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
     }
   ]
 
+  const active = steps[activeStep]
+
   return (
-    <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800/40 relative z-10">
-      {/* Background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] bg-indigo-600/5 rounded-full blur-3xl pointer-events-none" />
+    <div ref={containerRef} className="psr-outer bg-[#090A0F] border-t border-slate-800/40">
+      
+      {/* 1. Sticky Display Container */}
+      <div className="psr-sticky z-10 pointer-events-none">
+        
+        {/* Subtle background glow that adapts to the active step */}
+        <div 
+          className="absolute w-[600px] h-[300px] rounded-full blur-3xl pointer-events-none transition-all duration-700 opacity-20" 
+          style={{
+            background: activeStep === 0 
+              ? 'radial-gradient(circle, rgba(244,63,94,0.12) 0%, transparent 70%)'
+              : activeStep === 1
+                ? 'radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%)'
+                : 'radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%)',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)'
+          }}
+        />
 
-      {/* Header */}
-      <div className="text-center max-w-2xl mx-auto mb-16 relative z-10">
-        <p className="text-xs font-bold text-blue-500 tracking-widest uppercase">The Financial Reality</p>
-        <h2 className="text-2xl md:text-3xl font-extrabold text-slate-100 mt-2 tracking-tight">
-          Aligning Filipino households.<br />Solving structural debt.
-        </h2>
-        <p className="text-xs md:text-sm text-slate-500 mt-3 leading-relaxed">
-          Why scattered chat groups and memory logs fail to keep your family budget secure—and how shared alignment cures financial stress.
-        </p>
-      </div>
-
-      {/* Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
-        {cards.map((card, idx) => {
-          const IconComponent = card.icon
-          return (
+        <div className="max-w-5xl mx-auto px-6 w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start pointer-events-auto">
+          
+          {/* Left Column: Stage Label */}
+          <div className="lg:col-span-4 text-left pt-1">
             <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: idx * 0.1 }}
-              whileHover={{ 
-                y: -6, 
-                boxShadow: `0 30px 60px -15px rgba(0,0,0,0.8), 0 0 30px ${card.glow}`,
-                borderColor: "rgba(255,255,255,0.12)"
-              }}
-              className={`bg-[#0C0D12] border ${card.color} rounded-2xl p-6 flex flex-col justify-between text-left transition-all duration-300`}
+              key={`label-${activeStep}`}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="space-y-1"
             >
-              <div className="space-y-4">
-                {/* Badge Header */}
-                <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <span className={`inline-block px-2.5 py-0.5 rounded-full text-[9px] font-bold border ${card.badgeColor} uppercase tracking-wider`}>
-                      {card.title}
-                    </span>
-                    <p className="text-[10px] text-slate-500 font-semibold">{card.subtitle}</p>
-                  </div>
-                  <div className="w-8 h-8 rounded-xl bg-slate-900 border border-white/5 flex items-center justify-center text-slate-400">
-                    <IconComponent size={16} />
-                  </div>
-                </div>
-
-                {/* Divider */}
-                <div className="h-px bg-white/5 w-full" />
-
-                {/* Content */}
-                {card.content}
-              </div>
+              <h3 className={`text-4xl md:text-5xl font-extrabold tracking-tight ${active.colorClass}`}>
+                {active.category}
+              </h3>
+              <p className="text-[10px] text-slate-500 uppercase tracking-widest font-mono font-bold">
+                Stage {activeStep + 1} of 3
+              </p>
             </motion.div>
-          )
-        })}
+          </div>
+
+          {/* Right Column: Content */}
+          <div className="lg:col-span-8 text-left space-y-6">
+            <motion.div
+              key={`content-${activeStep}`}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="space-y-5"
+            >
+              <h4 className="text-xl md:text-3xl font-extrabold text-slate-100 tracking-tight leading-tight">
+                {active.headline}
+              </h4>
+
+              <p className="text-sm md:text-lg text-slate-350 leading-relaxed font-normal">
+                <span className={`inline px-1.5 py-0.5 rounded border ${active.highlightStyle} font-semibold mr-1.5 transition-all duration-300`}>
+                  {active.highlightText}
+                </span>{' '}
+                {active.body}
+              </p>
+
+              <p className="text-xs md:text-sm text-slate-500 leading-relaxed max-w-xl">
+                {active.subText}
+              </p>
+
+              <div className="w-full h-px bg-slate-800/40 pt-4" />
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Minimal dot navigation indicator on the right */}
+        <div className="absolute right-8 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-20 pointer-events-auto">
+          {steps.map((step, idx) => (
+            <button
+              key={idx}
+              onClick={() => {
+                const stepElement = document.getElementById(`step-trigger-${idx}`)
+                if (stepElement) {
+                  stepElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                }
+              }}
+              className="group relative flex items-center justify-center p-1.5 focus:outline-none cursor-pointer"
+              aria-label={`Jump to stage ${step.category}`}
+            >
+              <div 
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  activeStep === idx 
+                    ? activeStep === 0 
+                      ? 'bg-rose-500 scale-125 shadow-[0_0_8px_rgba(244,63,94,0.6)]'
+                      : activeStep === 1
+                        ? 'bg-blue-500 scale-125 shadow-[0_0_8px_rgba(59,130,246,0.6)]'
+                        : 'bg-emerald-500 scale-125 shadow-[0_0_8px_rgba(16,185,129,0.6)]'
+                    : 'bg-slate-700 hover:bg-slate-500'
+                }`}
+              />
+            </button>
+          ))}
+        </div>
       </div>
-    </section>
+
+      {/* 2. Scroll Trigger Background Landmarks (fills parent) */}
+      <div className="absolute inset-0 z-0 pointer-events-none flex flex-col">
+        <ScrollTrigger index={0} id="step-trigger-0" setActiveStep={setActiveStep} />
+        <ScrollTrigger index={1} id="step-trigger-1" setActiveStep={setActiveStep} />
+        <ScrollTrigger index={2} id="step-trigger-2" setActiveStep={setActiveStep} />
+        <ScrollTrigger index={2} id="step-trigger-spacer" setActiveStep={setActiveStep} />
+      </div>
+    </div>
+  )
+}
+
+function ScrollTrigger({ index, id, setActiveStep }) {
+  const ref = useRef(null)
+  const isInView = useInView(ref, {
+    // Triggers step change when trigger section crosses middle of viewport
+    margin: "-45% 0px -45% 0px",
+    once: false
+  })
+
+  useEffect(() => {
+    if (isInView) {
+      setActiveStep(index)
+    }
+  }, [isInView, index, setActiveStep])
+
+  return (
+    <div 
+      ref={ref} 
+      id={id} 
+      className="h-screen w-full pointer-events-none" 
+    />
   )
 }

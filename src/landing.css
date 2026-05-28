@@ -321,3 +321,21 @@ html {
   100% { box-shadow: 0 0 18px rgba(16, 185, 129, 0.65), 0 0 4px rgba(16, 185, 129, 0.2); }
 }
 
+/* Problem Solution Result sticky section */
+.psr-outer {
+  position: relative;
+  height: 400vh;
+  width: 100%;
+}
+
+.psr-sticky {
+  position: sticky;
+  top: 64px; /* below the sticky header */
+  height: calc(100vh - 64px);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
