@@ -3,10 +3,10 @@ import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import logo from '../assets/famly.png'
 
-export default function RegisterPage({ onSwitchToLogin, plan = 'STARTER' }) {
+export default function RegisterPage({ onSwitchToLogin, plan = 'STARTER', initialEmail = '' }) {
   const { register, isFirebaseConfigured } = useAuth()
   const [familyName, setFamilyName] = useState('')
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(initialEmail)
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')

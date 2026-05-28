@@ -81,31 +81,46 @@ export default function DashboardScrollPreview() {
         style={{ perspective: '1500px' }}
       >
         
-        {/* ─── LAPTOP LID (SCREEN) ─── */}
         <motion.div
           variants={lidVariants}
           initial="closed"
           animate={isInView ? 'open' : 'closed'}
-          className="relative w-[92%] h-[380px] md:h-[460px] bg-[#16181D] rounded-t-2xl border-[10px] border-[#22242a] shadow-2xl flex flex-col overflow-hidden origin-bottom z-20"
+          className="relative w-[94%] h-[380px] md:h-[460px] bg-[#16181D] rounded-t-xl border-[6px] border-black shadow-2xl flex flex-col overflow-hidden origin-bottom z-20"
           style={{ 
             transformStyle: 'preserve-3d',
             boxShadow: 'inset 0 0 10px rgba(0, 0, 0, 0.9), 0 -20px 40px -10px rgba(0,0,0,0.5)'
           }}
         >
           {/* Web camera notch */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-3.5 bg-black rounded-b-md z-50 flex items-center justify-center">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-2.5 bg-black rounded-b-md z-50 flex items-center justify-center">
             <span className="w-1 h-1 rounded-full bg-[#111] border border-blue-900/40 shadow-inner" />
           </div>
 
-          {/* Screen Content Wrapper */}
           <motion.div
             variants={screenContentVariants}
             initial="closed"
             animate={isInView ? 'open' : 'closed'}
-            className="w-full h-full flex flex-row bg-[#08090C] text-slate-300 relative overflow-hidden"
+            className="w-full h-full flex flex-col bg-[#08090C] text-slate-300 relative overflow-hidden"
           >
-            {/* Glossy screen glare reflection overlay */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.02] to-white/[0.07] pointer-events-none z-30" />
+            {/* Mock Safari Address Bar */}
+            <div className="h-6 bg-[#16171a] border-b border-white/5 flex items-center px-3 justify-between select-none shrink-0 z-40">
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#FF5F56] border border-[#E0443E] block shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#FFBD2E] border border-[#DEA123] block shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#27C93F] border border-[#1AAB29] block shrink-0" />
+              </div>
+              <div className="bg-[#0c0d10] border border-white/5 text-[8px] text-slate-500 rounded-md px-12 py-0.5 max-w-[200px] truncate flex items-center gap-1">
+                <span className="text-[7px]">🔒</span>
+                <span className="text-slate-300">famly.app</span>
+                <span className="text-slate-600">/workspace</span>
+              </div>
+              <div className="w-10" />
+            </div>
+
+            {/* Main App Display Container */}
+            <div className="flex-1 flex flex-row w-full overflow-hidden relative">
+              {/* Glossy screen glare reflection overlay */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.02] to-white/[0.07] pointer-events-none z-30" />
 
             {/* Screen Inner Glow */}
             <div className="absolute -top-12 -left-12 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none z-0" />
@@ -320,31 +335,35 @@ export default function DashboardScrollPreview() {
                 </div>
               )}
 
-            </div>
-          </motion.div>
+            </div> {/* End Simulator Main Content View */}
+          </div> {/* End Main App Display Container */}
         </motion.div>
+      </motion.div>
 
         {/* ─── LAPTOP BASE (KEYBOARD & SHADOW) ─── */}
         <div 
-          className="relative w-full h-[35px] bg-[#1d1f24] rounded-b-xl border-t border-[#31333a] z-10 origin-top overflow-hidden flex flex-col items-center shadow-[0_20px_50px_rgba(0,0,0,0.9)]"
+          className="relative w-full h-[22px] bg-gradient-to-b from-[#2e3035] to-[#121316] rounded-b-xl border-t border-[#414349] z-10 origin-top overflow-hidden flex flex-col items-center shadow-[0_25px_50px_rgba(0,0,0,0.8)]"
           style={{ 
-            transform: 'rotateX(50deg) translateY(-2px)',
+            transform: 'rotateX(55deg) translateY(-4px)',
             transformOrigin: 'top center',
-            boxShadow: 'inset 0 2px 2px rgba(255,255,255,0.15)'
+            boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.2), 0 8px 24px rgba(0,0,0,0.7)'
           }}
         >
+          {/* Thumb opening indent notch in the center edge */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-14 h-1.5 bg-[#090A0F] rounded-b-sm border-b border-[#31333a]/30" />
+          
           {/* Subtle metal keyboard indentation */}
-          <div className="w-[85%] h-5 bg-[#14151a] rounded-md mt-1.5 border border-[#2a2c33] shadow-inner relative flex justify-center items-center">
-            {/* Keyboard Grid Effect */}
-            <div className="w-[96%] h-[70%] border-t border-b border-[#2d303b]/40 flex justify-between px-1">
-              {Array.from({ length: 15 }).map((_, i) => (
-                <div key={i} className="w-[4%] h-full bg-[#1b1c21] border-l border-r border-[#262832]/40 rounded-sm" />
+          <div className="w-[88%] h-3 bg-[#0a0a0d] rounded-sm mt-1 border border-[#1b1c21] shadow-inner relative flex justify-center items-center">
+            {/* Keyboard grid keys simulation */}
+            <div className="w-[96%] h-[75%] border-t border-b border-[#1f2129]/60 flex justify-between px-1">
+              {Array.from({ length: 18 }).map((_, i) => (
+                <div key={i} className="w-[3.5%] h-full bg-[#121317] border-l border-r border-[#1e2026]/40 rounded-sm" />
               ))}
             </div>
           </div>
           
           {/* Touchpad details */}
-          <div className="w-[20%] h-3.5 bg-[#1e2026] rounded-sm mt-0.5 border border-[#2c2e36] shadow-sm" />
+          <div className="w-[22%] h-1.5 bg-gradient-to-b from-[#22242a] to-[#18191e] rounded-b-[2px] border border-[#3b3d43] mt-0.5 shadow-sm" />
         </div>
 
         {/* Glossy Desk Shadow */}

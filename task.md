@@ -14,6 +14,13 @@
 - [x] Remove hardcoded member ID routing in `getDashboardMeta()` → uses `profile.dashboardType`
 - [x] Remove hardcoded routing `['adrian','la','keisha']` → uses `profile.dashboardType`
 - [x] Replace static MEMBERS array with dynamic family management system
+- [x] FAQs & Contact Us
+  - [x] Fix hover cursor and hover text colors for FAQs
+  - [x] Implement smooth expand/collapse height animations using Framer Motion
+  - [x] Revamp white "Contact Us" card into premium dark glassmorphic card matching the theme
+- [x] Take Control Banner
+  - [x] Adjust color palette of the banner to glowing indigo-violet radial gradient
+  - [x] Add email signup input box or 3D tilt hover interaction
 - [x] Add emoji avatar picker (32+ emoji options)
 - [x] Add gradient color picker for profile cards
 - [x] Add dashboard type selector (tuition, milestone, debt, planner)

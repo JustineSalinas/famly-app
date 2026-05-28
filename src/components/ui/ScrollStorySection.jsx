@@ -53,7 +53,7 @@ export default function ScrollStorySection({ currency, onGetStarted, user }) {
   // iPhone mockup body transformations - Zooms in center (1.75 scale) & centers during screen scroll
   const phoneRotateX = useTransform(smoothProgress, [0, 0.12, 0.35, 0.48, 0.65, 0.75], [15, 0, 0, 0, 0, 8])
   const phoneRotateY = useTransform(smoothProgress, [0, 0.12, 0.35, 0.48, 0.65, 0.75], [-12, 0, 0, 0, 0, -18])
-  const phoneScale = useTransform(smoothProgress, [0, 0.12, 0.35, 0.48, 0.65, 0.75], [0.85, 1, 1, 1.75, 1.75, 0.95])
+  const phoneScale = useTransform(smoothProgress, [0, 0.12, 0.35, 0.48, 0.65, 0.75], [0.95, 1.15, 1.15, 1.85, 1.85, 1.05])
   const phoneX = useTransform(smoothProgress, 
     [0, 0.35, 0.48, 0.65, 0.75], 
     ["0%", "0%", "-68%", "-68%", "-130%"]
@@ -94,7 +94,7 @@ export default function ScrollStorySection({ currency, onGetStarted, user }) {
         >
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
-            ✨ Netflix-Style Family Sync
+            Netflix-Style Family Sync
           </div>
 
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-100 leading-[1.1] max-w-2xl">
@@ -232,7 +232,7 @@ export default function ScrollStorySection({ currency, onGetStarted, user }) {
             {/* Intro Pill */}
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
-              ✨ Netflix-Style Family Sync
+              Netflix-Style Family Sync
             </div>
 
             {/* Headline */}

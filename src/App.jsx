@@ -12,6 +12,7 @@ function AppInner() {
   // 'landing' | 'login' | 'register' | 'app'
   const [authMode, setAuthMode] = useState('landing')
   const [selectedPlan, setSelectedPlan] = useState('STARTER')
+  const [initialEmail, setInitialEmail] = useState('')
 
   // Auto-route to app on login/register success, and back to landing on sign out
   useEffect(() => {
@@ -52,12 +53,13 @@ function AppInner() {
       <LandingPage
         user={user}
         onLogout={logout}
-        onGetStarted={(mode = 'login', plan = 'STARTER') => {
+        onGetStarted={(mode = 'login', plan = 'STARTER', email = '') => {
           if (mode === 'app') {
             setAuthMode('app')
           } else {
             setAuthMode(mode)
             setSelectedPlan(plan)
+            setInitialEmail(email)
           }
         }}
       />
@@ -65,16 +67,25 @@ function AppInner() {
   }
 
   if (authMode === 'register') {
-    return <RegisterPage onSwitchToLogin={() => setAuthMode('login')} plan={selectedPlan} />
+    return (
+      <RegisterPage
+        onSwitchToLogin={() => setAuthMode('login')}
+        plan={selectedPlan}
+        initialEmail={initialEmail}
+      />
+    )
   }
 
-  return <LoginPage
-    onSwitchToRegister={() => {
-      setSelectedPlan('STARTER')
-      setAuthMode('register')
-    }}
-    onBack={() => setAuthMode('landing')}
-  />
+  return (
+    <LoginPage
+      onSwitchToRegister={() => {
+        setSelectedPlan('STARTER')
+        setInitialEmail('')
+        setAuthMode('register')
+      }}
+      onBack={() => setAuthMode('landing')}
+    />
+  )
 }
 
 class ErrorBoundary extends Component {
