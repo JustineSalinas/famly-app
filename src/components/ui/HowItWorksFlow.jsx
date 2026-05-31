@@ -101,8 +101,9 @@ export default function HowItWorksFlow() {
         {/* 2-Column Split: Scroll trigger on Left, Sticky mockup on Right */}
         <div className="grid grid-cols-12 gap-8 items-start relative mt-16">
           
-          {/* LEFT COLUMN: Scroll triggers */}
-          <div className="col-span-5 space-y-[45vh] pb-[20vh] relative z-10">
+          {/* LEFT COLUMN: Scroll triggers — generous top/bottom room so the
+              first and last steps can both reach the viewport centerline */}
+          <div className="col-span-5 space-y-[55vh] pt-[20vh] pb-[45vh] relative z-10">
             {STEPS.map((step, idx) => (
               <StepTextTrigger
                 key={idx}
@@ -114,8 +115,9 @@ export default function HowItWorksFlow() {
             ))}
           </div>
 
-          {/* RIGHT COLUMN: Sticky visual cards */}
-          <div className="col-span-7 sticky top-[150px] h-[55vh] flex items-center justify-center z-20">
+          {/* RIGHT COLUMN: Sticky visual — vertically centered in the viewport
+              so it sits side-by-side with whichever step is centered on the left */}
+          <div className="col-span-7 sticky top-0 h-screen flex items-center justify-center z-20">
             <div className="relative w-full max-w-[460px] h-[320px] bg-[#121319]/80 border border-white/5 rounded-2xl p-6 shadow-2xl flex items-center justify-center overflow-hidden">
               <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-15 pointer-events-none" />
 
@@ -139,9 +141,10 @@ export default function HowItWorksFlow() {
    ───────────────────────────────────────────────────────────── */
 function StepTextTrigger({ step, index, activeStep, setActiveStep }) {
   const ref = useRef(null)
-  // Trigger when element centers in viewport
+  // Symmetric thin band at the exact vertical center of the viewport, so a
+  // step becomes active precisely when it scrolls level with the sticky visual.
   const isInView = useInView(ref, {
-    margin: "-35% 0px -45% 0px",
+    margin: "-48% 0px -48% 0px",
     once: false
   })
 
@@ -190,9 +193,9 @@ function StepTextTrigger({ step, index, activeStep, setActiveStep }) {
 function StepOneVisual() {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.92, y: 15 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.92, y: -15 }}
+      initial={{ opacity: 0, scale: 0.96, x: 48 }}
+      animate={{ opacity: 1, scale: 1, x: 0 }}
+      exit={{ opacity: 0, scale: 0.96, x: -32 }}
       transition={{ type: 'spring', stiffness: 200, damping: 18 }}
       className="w-[290px] bg-[#090A0F] border border-white/10 rounded-xl p-5 shadow-xl text-left relative z-10"
     >
@@ -236,9 +239,9 @@ function StepOneVisual() {
 function StepTwoVisual() {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.92, y: 15 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.92, y: -15 }}
+      initial={{ opacity: 0, scale: 0.96, x: 48 }}
+      animate={{ opacity: 1, scale: 1, x: 0 }}
+      exit={{ opacity: 0, scale: 0.96, x: -32 }}
       transition={{ type: 'spring', stiffness: 200, damping: 18 }}
       className="w-full max-w-[340px] text-center"
     >
@@ -275,9 +278,9 @@ function StepTwoVisual() {
 function StepThreeVisual() {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.92, y: 15 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.92, y: -15 }}
+      initial={{ opacity: 0, scale: 0.96, x: 48 }}
+      animate={{ opacity: 1, scale: 1, x: 0 }}
+      exit={{ opacity: 0, scale: 0.96, x: -32 }}
       transition={{ type: 'spring', stiffness: 200, damping: 18 }}
       className="w-[300px] bg-[#090A0F] border border-white/10 rounded-xl p-4 shadow-xl text-left"
     >
@@ -327,9 +330,9 @@ function StepThreeVisual() {
 function StepFourVisual() {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.92, y: 15 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.92, y: -15 }}
+      initial={{ opacity: 0, scale: 0.96, x: 48 }}
+      animate={{ opacity: 1, scale: 1, x: 0 }}
+      exit={{ opacity: 0, scale: 0.96, x: -32 }}
       transition={{ type: 'spring', stiffness: 200, damping: 18 }}
       className="w-full max-w-[320px] flex flex-col items-center relative"
     >

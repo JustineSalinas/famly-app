@@ -9,14 +9,17 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Floating mockup smartphone & cards preview styles */
+/* Floating mockup smartphone & cards preview styles
+   Sized to iPhone 17 Pro Max proportions (≈440 × 956 pt, ratio ≈ 0.46) */
 .phone-mockup-wrapper {
   position: relative;
   width: 100%;
-  max-w: 325px;
+  max-width: 300px;
   margin: 0 auto;
-  perspective: 1000px;
+  perspective: 1200px;
   z-index: 10;
+  will-change: transform;
+  transform: translateZ(0); /* force GPU acceleration */
 }
 
 /* 3D angled float for the phone */
@@ -36,13 +39,13 @@
   }
 }
 
-/* Smartphone body */
+/* Smartphone body — iPhone 17 Pro Max proportions (300 × 652 ≈ 0.46) */
 .phone-bezel {
   width: 100%;
-  height: 620px;
+  height: 652px;
   background: #090A0F;
-  border: 11px solid #1c1d24;
-  border-radius: 46px;
+  border: 12px solid #1c1d24;
+  border-radius: 56px;
   box-shadow: 
     inset 0 0 4px 2px rgba(255, 255, 255, 0.1),
     inset 0 0 0 4px #090A0F;
@@ -113,13 +116,15 @@
   color: #0f172a;
   border-radius: 16px;
   padding: 14px 18px;
-  box-shadow: 
+  box-shadow:
     0 20px 40px -10px rgba(0, 0, 0, 0.4),
     0 0 0 1px rgba(0, 0, 0, 0.05);
   z-index: 30;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   min-width: 140px;
   text-align: left;
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 .lp-floating-card:hover {
@@ -211,12 +216,12 @@
 
 /* ─── Apple-style 3D Scroll Story additions ─── */
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: smooth; /* smooth anchor-link nav; does not affect scroll-scrubbed animations */
 }
 
 .scroll-story-outer {
   position: relative;
-  height: 350vh; /* gives tight, accurate room for scroll sequence steps */
+  height: 280vh; /* optimized viewport height for smooth animation */
 }
 
 .scroll-story-sticky {
@@ -227,6 +232,9 @@ html {
   display: flex;
   align-items: center;
   justify-content: center;
+  will-change: transform; /* enable GPU acceleration */
+  backface-visibility: hidden; /* prevent flickering */
+  -webkit-font-smoothing: antialiased;
 }
 
 .preserve-3d {
@@ -241,7 +249,7 @@ html {
 /* ─── Google Flow Step Process Layout ─── */
 .how-it-works-outer {
   position: relative;
-  height: 410vh; /* 4 steps, each step takes ~100vh scroll range */
+  height: 320vh; /* optimized for 4-step flow */
 }
 
 .how-it-works-sticky {
@@ -252,6 +260,8 @@ html {
   display: flex;
   align-items: center;
   justify-content: center;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 /* Animated circulating border for pricing recommended card */
@@ -324,7 +334,7 @@ html {
 /* Problem Solution Result sticky section */
 .psr-outer {
   position: relative;
-  height: 400vh;
+  height: 300vh; /* optimized viewport height */
   width: 100%;
 }
 
@@ -337,5 +347,81 @@ html {
   align-items: center;
   justify-content: center;
   width: 100%;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PREMIUM POLISH LAYER
+   ───────────────────────────────────────────────────────────── */
+
+/* Subtle film-grain texture — removes gradient banding in dark areas
+   and adds a tactile, high-end finish. Sits on the base layer (z-0). */
+.lp-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+/* Top reading-progress bar — premium wayfinding cue */
+.lp-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  transform-origin: 0% 50%;
+  background: linear-gradient(90deg, #10b981 0%, #06b6d4 50%, #3b82f6 100%);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* Navbar elevate-on-scroll: deeper blur + border + tighter shadow */
+.lp-nav-scrolled {
+  background: rgba(9, 10, 15, 0.92) !important;
+  border-bottom-color: rgba(30, 41, 59, 0.8) !important;
+  box-shadow: 0 8px 32px -12px rgba(0, 0, 0, 0.6);
+}
+
+/* Refined primary CTA: soft top sheen + smooth lift on hover */
+.lp-cta-primary {
+  position: relative;
+  overflow: hidden;
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 45%);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+.lp-cta-primary:hover {
+  transform: translateY(-1.5px);
+}
+
+/* ─── Accessibility: respect reduced-motion preference ───
+   Premium products give a calm, static experience to users who
+   are sensitive to motion. Disable looping + scroll-driven motion. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-phone-float,
+  .card-on-saves,
+  .card-total-expends,
+  .card-cash-available,
+  .glow-button-blue,
+  .glow-button-emerald,
+  .circulating-border-wrapper::before {
+    animation: none !important;
+  }
+  .lp-progress-bar {
+    display: none;
+  }
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
 }
 
