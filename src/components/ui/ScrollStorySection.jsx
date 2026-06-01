@@ -8,6 +8,7 @@ import {
   GraduationCap
 } from 'lucide-react'
 import AnimatedTextCycle from './AnimatedTextCycle'
+import logo from '../../assets/famly.png'
 
 export default function ScrollStorySection({ currency, onGetStarted, user }) {
   const containerRef = useRef(null)
@@ -152,7 +153,12 @@ export default function ScrollStorySection({ currency, onGetStarted, user }) {
                     <div className="w-5 h-2.5 border border-slate-900 rounded-[3px] p-[1px]" />
                   </div>
                 </div>
-                <div className="flex-1 flex flex-col pt-3 px-3">
+                {/* Brand Header */}
+                <div className="flex items-center gap-1.5 pl-2 pr-5 pt-1.5 pb-1 select-none">
+                  <img src={logo} alt="Famly" className="h-9 w-auto object-contain" />
+                  <span className="text-[13.5px] font-black text-slate-900 tracking-tight -ml-0.5">Famly</span>
+                </div>
+                <div className="flex-1 flex flex-col pt-1 px-3">
                   <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-left">
                     Total Debt Remaining
                   </div>
@@ -335,7 +341,6 @@ export default function ScrollStorySection({ currency, onGetStarted, user }) {
                   <span>5.23% vs last month</span>
                 </div>
               </motion.div>
-
               {/* Phone Bezel */}
               <div className="phone-bezel">
                 <div className="phone-dynamic-island" />
@@ -351,7 +356,7 @@ export default function ScrollStorySection({ currency, onGetStarted, user }) {
                         <rect x="0" y="9" width="2" height="3" rx="0.5" />
                         <rect x="3.5" y="7" width="2" height="5" rx="0.5" />
                         <rect x="7" y="4" width="2" height="8" rx="0.5" />
-                        <rect x="10.5" y="2" width="2" height="10" rx="0.5" />
+                        <rect x="10.5" y="2" width="2" height="12" rx="0.5" />
                         <rect x="14" y="0" width="2" height="12" rx="0.5" />
                       </svg>
                       <svg className="w-3 h-2.5" viewBox="0 0 16 12" fill="currentColor">
@@ -366,8 +371,14 @@ export default function ScrollStorySection({ currency, onGetStarted, user }) {
                     </div>
                   </div>
 
+                  {/* Brand Header */}
+                  <div className="flex items-center gap-1.5 pl-2 pr-5 pt-1.5 pb-1 select-none">
+                    <img src={logo} alt="Famly" className="h-9 w-auto object-contain" />
+                    <span className="text-[13.5px] font-black text-slate-900 tracking-tight -ml-0.5">Famly</span>
+                  </div>
+
                   {/* App Screen Content: Scrollable dashboards wrapper */}
-                  <div className="flex-1 overflow-hidden relative mt-2 rounded-b-[35px]">
+                  <div className="flex-1 overflow-hidden relative mt-0.5 rounded-b-[35px]">
                     <motion.div 
                       style={{ y: phoneScreenY }}
                       className="absolute inset-x-0 top-0 flex flex-col"
