@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
-import { motion, AnimatePresence, useInView } from 'framer-motion'
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion'
 import { Users, Shield, Plus, Check, ArrowRight, Zap, Play, HelpCircle } from 'lucide-react'
 
 // Steps data
@@ -83,51 +83,97 @@ export default function HowItWorksFlow() {
     )
   }
 
-  return (
-    <section id="how-it-works" className="w-full bg-[#090A0F] border-t border-slate-800/40 relative z-10">
-      <div className="max-w-6xl mx-auto px-6 py-20">
-        
-        {/* Section Header */}
-        <div className="text-left max-w-2xl mb-12">
-          <p className="text-xs font-bold text-blue-500 tracking-widest uppercase font-mono">Process Flow</p>
-          <h2 className="text-2xl md:text-4xl font-extrabold text-slate-100 mt-2 tracking-tight">
-            Your family's OS, live in minutes.
-          </h2>
-          <p className="text-xs md:text-sm text-slate-500 mt-3">
-            Watch the system activate step-by-step. Scroll down to trigger the timeline elements sequentially.
-          </p>
-        </div>
+  const containerRef = useRef(null)
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  })
 
-        {/* 2-Column Split: Scroll trigger on Left, Sticky mockup on Right */}
-        <div className="grid grid-cols-12 gap-8 items-start relative mt-16">
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    const step = Math.min(Math.floor(latest * 4), 3)
+    setActiveStep(step)
+  })
+
+  // Handle clicking on a step to scroll to it
+  const handleStepClick = (index) => {
+    if (!containerRef.current) return
+    const rect = containerRef.current.getBoundingClientRect()
+    const scrollTop = window.scrollY || document.documentElement.scrollTop
+    const sectionTop = rect.top + scrollTop
+    const sectionHeight = rect.height
+    // Map index (0 to 3) to scroll position inside the section height
+    const targetScroll = sectionTop + (index + 0.5) * 0.25 * (sectionHeight - window.innerHeight)
+    window.scrollTo({
+      top: targetScroll,
+      behavior: 'smooth'
+    })
+  }
+
+  return (
+    <section 
+      ref={containerRef} 
+      id="how-it-works" 
+      className="w-full bg-[#090A0F] border-t border-slate-800/40 relative z-10 h-[300vh]"
+    >
+      {/* Sticky Container */}
+      <div className="sticky top-0 h-screen w-full flex items-center z-20 overflow-hidden">
+        <div className="max-w-6xl mx-auto w-full px-6 py-8 flex flex-col justify-center h-full">
           
-          {/* LEFT COLUMN: Scroll triggers — generous top/bottom room so the
-              first and last steps can both reach the viewport centerline */}
-          <div className="col-span-5 space-y-[55vh] pt-[20vh] pb-[45vh] relative z-10">
-            {STEPS.map((step, idx) => (
-              <StepTextTrigger
-                key={idx}
-                step={step}
-                index={idx}
-                activeStep={activeStep}
-                setActiveStep={setActiveStep}
-              />
-            ))}
+          {/* Section Header */}
+          <div className="text-left max-w-2xl mb-8">
+            <p className="text-xs font-bold text-blue-500 tracking-widest uppercase font-mono">Process Flow</p>
+            <h2 className="text-2xl md:text-4xl font-extrabold text-slate-100 mt-2 tracking-tight">
+              Your family's OS, live in minutes.
+            </h2>
+            <p className="text-xs md:text-sm text-slate-500 mt-2">
+              Watch the system activate step-by-step. Scroll down to trigger the timeline elements sequentially.
+            </p>
           </div>
 
-          {/* RIGHT COLUMN: Sticky visual — vertically centered in the viewport
-              so it sits side-by-side with whichever step is centered on the left */}
-          <div className="col-span-7 sticky top-0 h-screen flex items-center justify-center z-20">
-            <div className="relative w-full max-w-[460px] h-[320px] bg-[#121319]/80 border border-white/5 rounded-2xl p-6 shadow-2xl flex items-center justify-center overflow-hidden">
-              <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-15 pointer-events-none" />
+          {/* 2-Column Split: List on Left, Mockup on Right */}
+          <div className="grid grid-cols-12 gap-8 items-center mt-4">
+            
+            {/* LEFT COLUMN: Scroll-pinned steps */}
+            <div className="col-span-5 space-y-6 relative z-10">
+              {/* Continuous vertical timeline line */}
+              <div className="absolute left-[16px] top-2 bottom-2 w-[2px] bg-slate-800 z-0" />
+              {/* Active colored line segment */}
+              <motion.div 
+                className="absolute left-[16px] top-2.5 w-[2px] bg-blue-500 shadow-[0_0_8px_#3b82f6] z-0"
+                initial={{ height: 0 }}
+                animate={{
+                  height: activeStep === 0 ? 0 : 
+                          activeStep === 1 ? '33%' : 
+                          activeStep === 2 ? '66%' : '95%'
+                }}
+                transition={{ duration: 0.4, ease: "easeInOut" }}
+              />
 
-              <AnimatePresence mode="wait">
-                {activeStep === 0 && <StepOneVisual key="step-0" />}
-                {activeStep === 1 && <StepTwoVisual key="step-1" />}
-                {activeStep === 2 && <StepThreeVisual key="step-2" />}
-                {activeStep === 3 && <StepFourVisual key="step-3" />}
-              </AnimatePresence>
+              {STEPS.map((step, idx) => (
+                <StepRow
+                  key={idx}
+                  step={step}
+                  index={idx}
+                  activeStep={activeStep}
+                  onClick={() => handleStepClick(idx)}
+                />
+              ))}
             </div>
+
+            {/* RIGHT COLUMN: Visual mockup */}
+            <div className="col-span-7 flex justify-center z-20">
+              <div className="relative w-full max-w-[580px] h-[400px] bg-[#121319]/80 border border-white/5 rounded-2xl p-8 shadow-2xl flex items-center justify-center overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-15 pointer-events-none" />
+
+                <AnimatePresence mode="wait">
+                  {activeStep === 0 && <StepOneVisual key="step-0" />}
+                  {activeStep === 1 && <StepTwoVisual key="step-1" />}
+                  {activeStep === 2 && <StepThreeVisual key="step-2" />}
+                  {activeStep === 3 && <StepFourVisual key="step-3" />}
+                </AnimatePresence>
+              </div>
+            </div>
+
           </div>
 
         </div>
@@ -137,49 +183,37 @@ export default function HowItWorksFlow() {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Step Text Trigger (Uses useInView to update parent active state)
+   Step Row Component
    ───────────────────────────────────────────────────────────── */
-function StepTextTrigger({ step, index, activeStep, setActiveStep }) {
-  const ref = useRef(null)
-  // Symmetric thin band at the exact vertical center of the viewport, so a
-  // step becomes active precisely when it scrolls level with the sticky visual.
-  const isInView = useInView(ref, {
-    margin: "-48% 0px -48% 0px",
-    once: false
-  })
-
-  useEffect(() => {
-    if (isInView) {
-      setActiveStep(index)
-    }
-  }, [isInView, index, setActiveStep])
-
+function StepRow({ step, index, activeStep, onClick }) {
   const isActive = index === activeStep
 
   return (
-    <div ref={ref} className="text-left relative pl-10 transition-all duration-300">
-      {/* Decorative vertical line segment */}
-      <div className={`absolute left-4 top-2 bottom-0 w-[2px] transition-colors duration-300 ${
-        isActive ? 'bg-blue-500 shadow-[0_0_8px_#3b82f6]' : 'bg-slate-800'
-      }`} />
-
+    <div 
+      onClick={onClick}
+      className={`text-left relative pl-10 transition-all duration-500 cursor-pointer ${
+        isActive ? 'opacity-100 scale-[1.02]' : 'opacity-30 scale-100'
+      }`}
+    >
       {/* Timeline Bullet */}
-      <div className={`absolute left-[9px] top-1.5 w-[16px] h-[16px] rounded-full border-2 flex items-center justify-center bg-[#090A0F] z-10 transition-all duration-300 ${
+      <div className={`absolute left-[9px] top-1.5 w-[16px] h-[16px] rounded-full border-2 flex items-center justify-center bg-[#090A0F] z-10 transition-all duration-500 ${
         isActive ? 'border-blue-500 shadow-[0_0_8px_#3b82f6]' : 'border-slate-800'
       }`}>
-        <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+        <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${
           isActive ? 'bg-blue-500' : 'bg-transparent'
         }`} />
       </div>
 
-      <div className="space-y-2">
-        <span className={`text-[10px] font-bold font-mono tracking-wider ${step.accent}`}>
+      <div className="space-y-1">
+        <span className={`text-[10px] font-bold font-mono tracking-wider transition-colors duration-500 ${
+          isActive ? step.accent : 'text-slate-500'
+        }`}>
           STEP {step.num}
         </span>
-        <h3 className="text-base font-extrabold text-slate-100 tracking-tight leading-snug">
+        <h3 className="text-sm font-extrabold text-slate-100 tracking-tight leading-snug">
           {step.title}
         </h3>
-        <p className="text-xs text-slate-400 leading-relaxed">
+        <p className="text-[11px] text-slate-400 leading-relaxed">
           {step.desc}
         </p>
       </div>
@@ -197,36 +231,36 @@ function StepOneVisual() {
       animate={{ opacity: 1, scale: 1, x: 0 }}
       exit={{ opacity: 0, scale: 0.96, x: -32 }}
       transition={{ type: 'spring', stiffness: 200, damping: 18 }}
-      className="w-[290px] bg-[#090A0F] border border-white/10 rounded-xl p-5 shadow-xl text-left relative z-10"
+      className="w-[360px] bg-[#090A0F] border border-white/10 rounded-xl p-6 shadow-xl text-left relative z-10"
     >
-      <div className="flex items-center gap-2 border-b border-white/5 pb-2.5 mb-3.5">
-        <Shield size={13} className="text-blue-500" />
-        <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Initialize Household</span>
+      <div className="flex items-center gap-2.5 border-b border-white/5 pb-3 mb-4">
+        <Shield size={15} className="text-blue-500" />
+        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Initialize Household</span>
       </div>
 
-      <div className="space-y-3 text-xs">
+      <div className="space-y-4 text-sm">
         <div>
-          <label className="text-[8px] font-bold text-slate-500 block uppercase mb-1">Household Title</label>
-          <div className="h-7 border border-white/10 bg-white/[0.02] rounded-md px-2.5 flex items-center text-slate-200 font-medium">
+          <label className="text-[9px] font-bold text-slate-500 block uppercase mb-1.5">Household Title</label>
+          <div className="h-9 border border-white/10 bg-white/[0.02] rounded-md px-3 flex items-center text-slate-200 font-medium">
             Salinas Family
             <motion.span 
               animate={{ opacity: [0, 1, 0] }}
               transition={{ repeat: Infinity, duration: 0.8 }}
-              className="w-1 h-3 bg-blue-500 ml-0.5 inline-block"
+              className="w-1.5 h-4 bg-blue-500 ml-0.5 inline-block"
             />
           </div>
         </div>
 
         <div>
-          <label className="text-[8px] font-bold text-slate-500 block uppercase mb-1">Root Admin Account</label>
-          <div className="h-7 border border-white/10 bg-white/[0.02] rounded-md px-2.5 flex items-center text-slate-400">
+          <label className="text-[9px] font-bold text-slate-500 block uppercase mb-1.5">Root Admin Account</label>
+          <div className="h-9 border border-white/10 bg-white/[0.02] rounded-md px-3 flex items-center text-slate-400">
             justine@salinas-household.com
           </div>
         </div>
 
-        <button className="w-full h-8 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-[9.5px] flex items-center justify-center gap-1.5 shadow-md mt-2">
+        <button className="w-full h-10 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xs flex items-center justify-center gap-2 shadow-md mt-3">
           Create Secure Vault
-          <ArrowRight size={10} />
+          <ArrowRight size={12} />
         </button>
       </div>
     </motion.div>
@@ -243,11 +277,11 @@ function StepTwoVisual() {
       animate={{ opacity: 1, scale: 1, x: 0 }}
       exit={{ opacity: 0, scale: 0.96, x: -32 }}
       transition={{ type: 'spring', stiffness: 200, damping: 18 }}
-      className="w-full max-w-[340px] text-center"
+      className="w-full max-w-[420px] text-center"
     >
-      <p className="text-[9px] font-bold uppercase text-slate-500 tracking-widest mb-5">Choose Member Profile</p>
+      <p className="text-[10px] font-bold uppercase text-slate-500 tracking-widest mb-6">Choose Member Profile</p>
       
-      <div className="flex justify-between gap-3">
+      <div className="flex justify-between gap-4">
         {[
           { name: 'Mom', emoji: '👩', grad: 'from-purple-600 to-pink-500', role: 'Admin', delay: 0 },
           { name: 'Kuya', emoji: '👦', grad: 'from-blue-600 to-blue-400', role: 'Scholar', delay: 0.05 },
@@ -258,13 +292,13 @@ function StepTwoVisual() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: 'spring', stiffness: 180, damping: 16, delay: profile.delay }}
-            className="flex-1 bg-[#090A0F] border border-white/5 rounded-xl p-3 flex flex-col items-center hover:border-white/10 transition-all cursor-pointer shadow-md"
+            className="flex-1 bg-[#090A0F] border border-white/5 rounded-xl p-4 flex flex-col items-center hover:border-white/10 transition-all cursor-pointer shadow-md"
           >
-            <div className={`w-11 h-11 rounded-full bg-gradient-to-br ${profile.grad} flex items-center justify-center text-xl shadow-inner mb-2`}>
+            <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${profile.grad} flex items-center justify-center text-2xl shadow-inner mb-3.5`}>
               {profile.emoji}
             </div>
-            <span className="text-[10px] font-bold text-slate-200">{profile.name}</span>
-            <span className="text-[7.5px] font-semibold text-slate-500 mt-0.5">{profile.role}</span>
+            <span className="text-xs font-bold text-slate-200">{profile.name}</span>
+            <span className="text-[9px] font-semibold text-slate-500 mt-1">{profile.role}</span>
           </motion.div>
         ))}
       </div>
@@ -282,17 +316,17 @@ function StepThreeVisual() {
       animate={{ opacity: 1, scale: 1, x: 0 }}
       exit={{ opacity: 0, scale: 0.96, x: -32 }}
       transition={{ type: 'spring', stiffness: 200, damping: 18 }}
-      className="w-[300px] bg-[#090A0F] border border-white/10 rounded-xl p-4 shadow-xl text-left"
+      className="w-[380px] bg-[#090A0F] border border-white/10 rounded-xl p-5 shadow-xl text-left"
     >
-      <div className="flex justify-between items-center border-b border-white/5 pb-2 mb-3">
-        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-          <Plus size={10} className="text-emerald-400" />
+      <div className="flex justify-between items-center border-b border-white/5 pb-3 mb-4">
+        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+          <Plus size={12} className="text-emerald-400" />
           Log Obligation
         </span>
-        <span className="text-[7.5px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">ACTIVE</span>
+        <span className="text-[8px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">ACTIVE</span>
       </div>
 
-      <div className="space-y-2 text-xs">
+      <div className="space-y-2.5 text-xs">
         {[
           { title: 'BDO Housing Loan', type: 'Mortgage', amt: '₱312,000', completed: true, delay: 0 },
           { title: 'SSS Calamity Loan', type: 'Govt Loan', amt: '₱18,400', completed: true, delay: 0.05 },
@@ -303,20 +337,20 @@ function StepThreeVisual() {
             initial={{ opacity: 0, x: -8 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: item.delay }}
-            className="flex items-center justify-between p-2 bg-[#121319] border border-white/5 rounded-lg"
+            className="flex items-center justify-between p-3 bg-[#121319] border border-white/5 rounded-lg"
           >
-            <div className="flex items-center gap-2">
-              <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center ${
+            <div className="flex items-center gap-2.5">
+              <div className={`w-4.5 h-4.5 rounded-full flex items-center justify-center ${
                 item.completed ? 'bg-emerald-500/10 text-emerald-400' : 'bg-slate-800 text-slate-600'
               }`}>
-                <Check size={9} strokeWidth={3.5} />
+                <Check size={11} strokeWidth={3.5} />
               </div>
               <div>
-                <p className="font-bold text-slate-200 text-[9px] leading-tight">{item.title}</p>
-                <p className="text-[6.5px] text-slate-500 leading-none mt-0.5">{item.type}</p>
+                <p className="font-bold text-slate-200 text-xs leading-tight">{item.title}</p>
+                <p className="text-[8px] text-slate-500 leading-none mt-1">{item.type}</p>
               </div>
             </div>
-            <span className="font-black text-slate-200 text-[9.5px]">{item.amt}</span>
+            <span className="font-black text-slate-200 text-xs">{item.amt}</span>
           </motion.div>
         ))}
       </div>
@@ -334,38 +368,52 @@ function StepFourVisual() {
       animate={{ opacity: 1, scale: 1, x: 0 }}
       exit={{ opacity: 0, scale: 0.96, x: -32 }}
       transition={{ type: 'spring', stiffness: 200, damping: 18 }}
-      className="w-full max-w-[320px] flex flex-col items-center relative"
+      className="w-full max-w-[500px] flex flex-col items-center relative"
     >
-      <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center shadow-lg relative z-20">
-        <Zap className="text-blue-400 animate-pulse" size={20} />
+      {/* Central Sync Hub Icon */}
+      <div className="w-16 h-16 rounded-2xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center shadow-lg shadow-blue-950/20 relative z-20">
+        <Zap className="text-blue-400 animate-pulse" size={26} />
         <span className="absolute inset-0 rounded-2xl border border-blue-500/30 animate-ping opacity-35" />
       </div>
 
-      <div className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-2.5 mb-7">Central Sync Hub</div>
+      <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-4 mb-14">Central Sync Hub</div>
 
-      <div className="flex justify-between w-full relative z-20 gap-2">
+      {/* Sync Member Cards */}
+      <div className="flex justify-between w-full relative z-20 gap-4">
         {[
-          { emoji: '👩', title: 'Mom', desc: 'Active', color: 'border-purple-500/20' },
-          { emoji: '👦', title: 'Kuya', desc: 'Active', color: 'border-blue-500/20' },
-          { emoji: '👧', title: 'Ate', desc: 'Active', color: 'border-emerald-500/20' }
+          { emoji: '👩', title: 'Mom', role: 'Admin', desc: 'Active', color: 'border-purple-500/20 hover:border-purple-500/40 bg-purple-500/5' },
+          { emoji: '👦', title: 'Kuya', role: 'Scholar', desc: 'Active', color: 'border-blue-500/20 hover:border-blue-500/40 bg-blue-500/5' },
+          { emoji: '👧', title: 'Ate', role: 'Planner', desc: 'Active', color: 'border-emerald-500/20 hover:border-emerald-500/40 bg-emerald-500/5' }
         ].map((item, idx) => (
-          <div key={idx} className={`bg-[#090A0F] border ${item.color} rounded-xl px-2 py-1 flex items-center gap-1 shadow-md flex-1 justify-center`}>
-            <div className="text-xs">{item.emoji}</div>
-            <div className="text-left">
-              <span className="text-[7.5px] font-bold text-slate-200 block leading-tight">{item.title}</span>
-              <span className="text-[5.5px] text-emerald-400 font-medium block flex items-center gap-0.5">
-                <span className="w-1 h-1 bg-emerald-500 rounded-full animate-ping" />
-                {item.desc}
-              </span>
+          <div 
+            key={idx} 
+            className={`border ${item.color} rounded-2xl p-4 flex flex-col items-center gap-3 shadow-xl flex-1 transition-all duration-300`}
+          >
+            {/* Avatar (Head Profile) */}
+            <div className="w-12 h-12 rounded-full bg-slate-900 border border-white/5 flex items-center justify-center text-2xl shadow-inner shrink-0">
+              {item.emoji}
             </div>
+
+            {/* Member Details */}
+            <div className="text-center space-y-0.5">
+              <span className="text-xs font-bold text-slate-100 block leading-tight">{item.title}</span>
+              <span className="text-[8.5px] text-slate-400 font-semibold block uppercase tracking-wider">{item.role}</span>
+            </div>
+
+            {/* Active Status Under Card */}
+            <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-[7.5px] font-bold uppercase tracking-wider text-emerald-400 mt-1">
+              <span className="w-1 h-1 bg-emerald-500 rounded-full animate-ping" />
+              {item.desc}
+            </span>
           </div>
         ))}
       </div>
 
-      <svg className="absolute inset-0 w-full h-[180px] top-[10px] pointer-events-none z-0">
-        <path d="M 150 25 L 50 115" stroke="rgba(59, 130, 246, 0.2)" strokeWidth="1.2" fill="none" strokeDasharray="3 3" />
-        <path d="M 150 25 L 150 115" stroke="rgba(59, 130, 246, 0.2)" strokeWidth="1.2" fill="none" strokeDasharray="3 3" />
-        <path d="M 150 25 L 250 115" stroke="rgba(59, 130, 246, 0.2)" strokeWidth="1.2" fill="none" strokeDasharray="3 3" />
+      {/* Connection paths */}
+      <svg viewBox="0 0 500 240" preserveAspectRatio="none" className="absolute inset-0 w-full h-[240px] top-[24px] pointer-events-none z-0">
+        <path d="M 250 32 L 83 136" stroke="rgba(59, 130, 246, 0.2)" strokeWidth="1.5" fill="none" strokeDasharray="4 4" />
+        <path d="M 250 32 L 250 136" stroke="rgba(59, 130, 246, 0.2)" strokeWidth="1.5" fill="none" strokeDasharray="4 4" />
+        <path d="M 250 32 L 417 136" stroke="rgba(59, 130, 246, 0.2)" strokeWidth="1.5" fill="none" strokeDasharray="4 4" />
       </svg>
     </motion.div>
   )
