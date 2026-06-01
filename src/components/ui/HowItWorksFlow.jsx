@@ -40,7 +40,6 @@ const STEPS = [
 
 export default function HowItWorksFlow() {
   const [isMobile, setIsMobile] = useState(false)
-  const [activeStep, setActiveStep] = useState(0)
 
   // Detect mobile view
   useEffect(() => {
@@ -52,37 +51,45 @@ export default function HowItWorksFlow() {
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // If mobile, show a simplified standard grid list
   if (isMobile) {
-    return (
-      <section id="how-it-works" className="max-w-6xl mx-auto px-6 py-20 border-t border-slate-800/40 relative z-10 bg-[#0C0D0F]/30">
-        <div className="text-center max-w-xl mx-auto mb-16">
-          <p className="text-xs font-bold text-blue-500 tracking-widest uppercase">How It Works</p>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-slate-100 mt-2 tracking-tight">
-            Your family's OS, live in minutes
-          </h2>
-          <p className="text-xs md:text-sm text-slate-400 mt-3 leading-relaxed">
-            Four intentional steps from blank slate to full financial clarity—no spreadsheet PhD required.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {STEPS.map((step, idx) => (
-            <div 
-              key={idx} 
-              className="bg-[#0C0D0F] border border-slate-800/60 rounded-2xl p-5 relative overflow-hidden shadow-sm"
-            >
-              <span className="absolute top-3 right-4 text-5xl font-extrabold text-slate-850 font-mono select-none leading-none">{step.num}</span>
-              <div className={`text-xs font-bold uppercase tracking-widest mb-3 ${step.accent}`}>Step {step.num}</div>
-              <h4 className="text-sm font-bold text-slate-100 leading-snug">{step.title}</h4>
-              <p className="text-xs text-slate-400 mt-2 leading-relaxed">{step.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-    )
+    return <HowItWorksMobile />
   }
 
+  return <HowItWorksDesktop />
+}
+
+function HowItWorksMobile() {
+  return (
+    <section id="how-it-works" className="max-w-6xl mx-auto px-6 py-20 border-t border-slate-800/40 relative z-10 bg-[#0C0D0F]/30">
+      <div className="text-center max-w-xl mx-auto mb-16">
+        <p className="text-xs font-bold text-blue-500 tracking-widest uppercase">How It Works</p>
+        <h2 className="text-2xl md:text-3xl font-extrabold text-slate-100 mt-2 tracking-tight">
+          Your family's OS, live in minutes
+        </h2>
+        <p className="text-xs md:text-sm text-slate-400 mt-3 leading-relaxed">
+          Four intentional steps from blank slate to full financial clarity—no spreadsheet PhD required.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {STEPS.map((step, idx) => (
+          <div 
+            key={idx} 
+            className="bg-[#0C0D0F] border border-slate-800/60 rounded-2xl p-5 relative overflow-hidden shadow-sm"
+          >
+            <span className="absolute top-3 right-4 text-5xl font-extrabold text-slate-850 font-mono select-none leading-none">{step.num}</span>
+            <div className={`text-xs font-bold uppercase tracking-widest mb-3 ${step.accent}`}>Step {step.num}</div>
+            <h4 className="text-sm font-bold text-slate-100 leading-snug">{step.title}</h4>
+            <p className="text-xs text-slate-400 mt-2 leading-relaxed">{step.desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function HowItWorksDesktop() {
+  const [activeStep, setActiveStep] = useState(0)
   const containerRef = useRef(null)
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -125,7 +132,7 @@ export default function HowItWorksFlow() {
             <h2 className="text-2xl md:text-4xl font-extrabold text-slate-100 mt-2 tracking-tight">
               Your family's OS, live in minutes.
             </h2>
-            <p className="text-xs md:text-sm text-slate-500 mt-2">
+            <p className="text-xs md:text-sm text-slate-505 mt-2">
               Watch the system activate step-by-step. Scroll down to trigger the timeline elements sequentially.
             </p>
           </div>
