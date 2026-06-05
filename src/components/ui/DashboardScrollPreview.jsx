@@ -1,41 +1,13 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { Shield, TrendingUp, DollarSign, ArrowUpRight, Zap, Target, Users, Settings, CreditCard, BookOpen, LogOut, ArrowLeft, Loader2, Check, Sparkles, Briefcase } from 'lucide-react'
+import { Shield, TrendingUp, DollarSign, ArrowUpRight, Zap, Target, Users, User, GraduationCap, PiggyBank, Settings, CreditCard, BookOpen, LogOut, ArrowLeft, Loader2, Check, Sparkles, Briefcase } from 'lucide-react'
 import logo from '../../assets/famly.png'
 
 const SIM_PROFILES = [
-  { 
-    id: 'mom', 
-    name: 'Mom', 
-    emoji: '👩', 
-    gradient: 'from-purple-600 to-pink-500', 
-    role: 'Debt Ledger', 
-    defaultTab: 'debts'
-  },
-  { 
-    id: 'dad', 
-    name: 'Dad', 
-    emoji: '👨', 
-    gradient: 'from-rose-600 to-orange-500', 
-    role: 'Family Planner', 
-    defaultTab: 'planner'
-  },
-  { 
-    id: 'kuya', 
-    name: 'Kuya', 
-    emoji: '👦', 
-    gradient: 'from-blue-600 to-blue-400', 
-    role: 'Tuition Tracker', 
-    defaultTab: 'tuition'
-  },
-  { 
-    id: 'ate', 
-    name: 'Ate', 
-    emoji: '👧', 
-    gradient: 'from-emerald-600 to-teal-400', 
-    role: 'Savings Milestones', 
-    defaultTab: 'milestones'
-  }
+  { id: 'mom',  name: 'Mom',  Icon: User,          role: 'Debt Ledger',       defaultTab: 'debts' },
+  { id: 'dad',  name: 'Dad',  Icon: Users,          role: 'Family Planner',    defaultTab: 'planner' },
+  { id: 'kuya', name: 'Kuya', Icon: GraduationCap,  role: 'Tuition Tracker',   defaultTab: 'tuition' },
+  { id: 'ate',  name: 'Ate',  Icon: PiggyBank,       role: 'Savings Milestones', defaultTab: 'milestones' },
 ]
 
 export default function DashboardScrollPreview() {
@@ -244,7 +216,7 @@ export default function DashboardScrollPreview() {
                       <img src={logo} alt="Famly" className="h-6 w-auto object-contain" />
                     </div>
                     <h3 className="text-xs md:text-sm font-black text-slate-100 tracking-tight">Who is tracking today?</h3>
-                    <p className="text-slate-500 text-[6.5px] uppercase tracking-widest font-bold">Salinas Household · Select Profile</p>
+                    <p className="text-slate-500 text-[6.5px] uppercase tracking-widest font-bold">Rivera Family · Select Profile</p>
                   </div>
 
                   {/* Grid of Netflix Profiles */}
@@ -255,10 +227,9 @@ export default function DashboardScrollPreview() {
                         onClick={() => handleSelectProfile(p)}
                         className="group flex flex-col items-center gap-1.5 p-1.5 rounded-lg border border-transparent hover:bg-white/[0.02] hover:border-slate-800/40 transition-all duration-200 cursor-pointer"
                       >
-                        {/* Avatar square */}
-                        <div className={`relative w-10 h-10 md:w-12 md:h-12 rounded-lg bg-gradient-to-br ${p.gradient} flex items-center justify-center text-lg shadow-md border border-white/5 transition-all duration-200 group-hover:scale-105 group-hover:ring-2 group-hover:ring-white/20`}>
-                          <span>{p.emoji}</span>
-                          <div className="absolute inset-0 rounded-lg bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        {/* Avatar square — shadcn-style minimal */}
+                        <div className="relative w-10 h-10 md:w-12 md:h-12 rounded-xl bg-slate-800/80 border border-white/8 flex items-center justify-center shadow-sm transition-all duration-200 group-hover:scale-105 group-hover:bg-slate-700/80 group-hover:border-slate-600/50">
+                          <p.Icon size={16} className="text-slate-400 group-hover:text-slate-200 transition-colors duration-200" />
                         </div>
                         {/* Name & Role */}
                         <div className="text-center">
@@ -290,13 +261,13 @@ export default function DashboardScrollPreview() {
                       className="absolute inset-0 border-2 border-t-blue-500 border-r-transparent border-b-transparent border-l-transparent rounded-full"
                     />
                     {/* Avatar scaling up */}
-                    <motion.div 
+                    <motion.div
                       initial={{ scale: 0.5, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                      className={`w-9 h-9 rounded-full bg-gradient-to-br ${selectedProfile.gradient} flex items-center justify-center text-base shadow-md`}
+                      className="w-9 h-9 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center shadow-md"
                     >
-                      {selectedProfile.emoji}
+                      <selectedProfile.Icon size={15} className="text-slate-300" />
                     </motion.div>
                   </div>
                   <h4 className="text-slate-200 text-[8px] font-extrabold mt-3 uppercase tracking-wider animate-pulse">
@@ -325,8 +296,8 @@ export default function DashboardScrollPreview() {
 
                     {/* Active Profile Info */}
                     <div className="flex items-center gap-1.5 bg-white/[0.02] border border-white/5 p-1.5 rounded-lg mb-3.5">
-                      <div className={`w-6 h-6 rounded-md bg-gradient-to-br ${selectedProfile.gradient} flex items-center justify-center text-xs shrink-0 shadow-inner`}>
-                        {selectedProfile.emoji}
+                      <div className="w-6 h-6 rounded-md bg-slate-800 border border-white/10 flex items-center justify-center shrink-0">
+                        <selectedProfile.Icon size={10} className="text-slate-300" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-[7.5px] font-extrabold text-slate-200 truncate leading-tight">{selectedProfile.name}</p>

@@ -249,7 +249,7 @@ function StepOneVisual() {
         <div>
           <label className="text-[9px] font-bold text-slate-500 block uppercase mb-1.5">Household Title</label>
           <div className="h-9 border border-white/10 bg-white/[0.02] rounded-md px-3 flex items-center text-slate-200 font-medium">
-            Salinas Family
+            Rivera Family
             <motion.span 
               animate={{ opacity: [0, 1, 0] }}
               transition={{ repeat: Infinity, duration: 0.8 }}
@@ -261,7 +261,7 @@ function StepOneVisual() {
         <div>
           <label className="text-[9px] font-bold text-slate-500 block uppercase mb-1.5">Root Admin Account</label>
           <div className="h-9 border border-white/10 bg-white/[0.02] rounded-md px-3 flex items-center text-slate-400">
-            justine@salinas-household.com
+            admin@rivera-household.com
           </div>
         </div>
 

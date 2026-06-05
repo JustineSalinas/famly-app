@@ -7,6 +7,7 @@ import {
   CreditCard,
   Target,
   Users,
+  User,
   ArrowUpRight,
   Menu,
   X,
@@ -78,38 +79,38 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] lp-radial-glow pointer-events-none z-0" />
 
       {/* ─── Header / Navbar ────────────────────────────────────────── */}
-      <header className={`sticky top-0 z-40 bg-[#090A0F]/80 backdrop-blur-md border-b border-slate-800/40 py-3 flex items-center transition-all duration-300 ${navScrolled ? 'lp-nav-scrolled backdrop-blur-xl' : ''}`}>
-        <div className="max-w-6xl mx-auto w-full px-6 flex items-center justify-between">
+      <header className={`sticky top-0 z-40 bg-[#090A0F]/90 backdrop-blur-md border-b border-slate-800/40 transition-all duration-300 ${navScrolled ? 'lp-nav-scrolled backdrop-blur-xl' : ''}`}>
+        <div className="max-w-6xl mx-auto w-full px-6 h-14 flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-1 md:flex-1">
-            <img src={logo} alt="Famly" className="h-14 w-auto object-contain" />
-            <span className="text-2xl font-bold tracking-tight text-slate-100 -ml-1.5">Famly</span>
+          <div className="flex items-center gap-2 flex-1">
+            <img src={logo} alt="Famly" className="h-7 w-auto object-contain" />
+            <span className="text-[15px] font-bold tracking-tight text-slate-200">Famly</span>
           </div>
 
           {/* Nav links (desktop) */}
-          <nav className="hidden md:flex items-center justify-center gap-8 text-sm text-slate-400 font-medium md:flex-1">
-            <a href="#features" className="hover:text-slate-200 transition-colors">Features</a>
-            <a href="#how-it-works" className="hover:text-slate-200 transition-colors">How It Works</a>
-            <a href="#pricing" className="hover:text-slate-200 transition-colors">Pricing</a>
+          <nav className="hidden md:flex items-center justify-center gap-8 text-xs text-slate-400 font-semibold md:flex-1 tracking-wide">
+            <a href="#features" className="hover:text-slate-200 transition-colors duration-150">Features</a>
+            <a href="#how-it-works" className="hover:text-slate-200 transition-colors duration-150">How It Works</a>
+            <a href="#pricing" className="hover:text-slate-200 transition-colors duration-150">Pricing</a>
           </nav>
 
           {/* Auth buttons (desktop) */}
-          <div className="hidden md:flex items-center justify-end gap-3 md:flex-1">
+          <div className="hidden md:flex items-center justify-end gap-2.5 flex-1">
             {user ? (
               <>
-                <span className="text-xs text-slate-400 font-medium mr-2">
-                  Signed in as <strong className="text-slate-200">{user.displayName || user.email}</strong> ({user.plan})
+                <span className="text-xs text-slate-500 font-medium mr-1 truncate max-w-[160px]">
+                  {user.displayName || user.email}
                 </span>
                 <button
                   onClick={() => onGetStarted('app')}
-                  className="lp-cta-primary px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg active:scale-95 shadow-md shadow-blue-900/10 border border-blue-500/10 flex items-center gap-1 cursor-pointer"
+                  className="lp-cta-primary px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg active:scale-95 shadow-md shadow-blue-900/10 border border-blue-500/10 flex items-center gap-1 cursor-pointer transition-colors duration-150"
                 >
                   Enter Workspace
-                  <ArrowUpRight size={13} />
+                  <ArrowUpRight size={12} />
                 </button>
                 <button
                   onClick={onLogout}
-                  className="px-3.5 py-1.5 text-slate-400 hover:text-slate-200 text-xs font-semibold rounded-lg hover:bg-slate-800/30 transition-all active:scale-95 duration-75 cursor-pointer"
+                  className="px-3 py-1.5 text-slate-500 hover:text-slate-200 text-xs font-semibold rounded-lg hover:bg-slate-800/40 transition-all active:scale-95 duration-75 cursor-pointer"
                 >
                   Sign Out
                 </button>
@@ -118,16 +119,16 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
               <>
                 <button
                   onClick={() => onGetStarted('login')}
-                  className="px-3.5 py-1.5 text-slate-400 hover:text-slate-200 text-xs font-semibold rounded-lg hover:bg-slate-800/30 transition-all active:scale-95 duration-75"
+                  className="px-3 py-1.5 text-slate-400 hover:text-slate-200 text-xs font-semibold rounded-lg hover:bg-slate-800/40 transition-all active:scale-95 duration-75"
                 >
                   Sign In
                 </button>
                 <button
                   onClick={() => onGetStarted('register', 'STARTER')}
-                  className="lp-cta-primary px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg active:scale-95 shadow-md shadow-blue-900/10 border border-blue-500/10 flex items-center gap-1"
+                  className="lp-cta-primary px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg active:scale-95 shadow-md shadow-blue-900/10 border border-blue-500/10 flex items-center gap-1 transition-colors duration-150"
                 >
                   Start Free
-                  <ArrowUpRight size={13} />
+                  <ArrowUpRight size={12} />
                 </button>
               </>
             )}
@@ -136,9 +137,9 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
           {/* Mobile hamburger button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-1.5 rounded-lg bg-slate-900 border border-slate-800/60 text-slate-400 hover:text-slate-200 transition-colors active:scale-95 duration-75"
+            className="md:hidden p-1.5 rounded-lg bg-slate-900/80 border border-slate-800/60 text-slate-400 hover:text-slate-200 transition-colors active:scale-95 duration-75"
           >
-            {mobileMenuOpen ? <X size={16} /> : <Menu size={16} />}
+            {mobileMenuOpen ? <X size={15} /> : <Menu size={15} />}
           </button>
         </div>
       </header>
@@ -547,7 +548,7 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
               },
               {
                 q: 'How does profile selection work?',
-                a: 'When you log in, you\'ll see a Netflix-style profile picker. Each family member has their own emoji avatar and is assigned a dashboard type—so Kuya sees his Tuition dashboard while Mom sees the Debt Ledger. Everyone stays in their lane.'
+                a: 'When you log in, you\'ll see your personalized member profile. Each family member has their own role-based dashboard—Kuya sees his Tuition Tracker, Mom sees the Debt Ledger, and Ate sees her Savings Milestones. Everyone stays focused on what matters to them.'
               },
               {
                 q: 'What payment methods does Famly accept?',
@@ -602,35 +603,33 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
           </div>
 
           {/* Contact Box Card (Right Column - 4 Cols) */}
-          <div className="lg:col-span-4 relative overflow-hidden rounded-2xl border border-white/5 bg-gradient-to-b from-[#16181D] to-[#0F1115] p-7 text-left text-slate-200 shadow-2xl h-full flex flex-col">
-            {/* Ambient glow */}
-            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="lg:col-span-4 relative overflow-hidden rounded-2xl border border-white/5 bg-gradient-to-b from-[#13141A] to-[#0E0F14] p-7 text-left text-slate-200 shadow-2xl h-full flex flex-col">
+            {/* Ambient glow — neutral blue, subtle */}
+            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-600/5 rounded-full blur-3xl pointer-events-none" />
 
             {/* Top: live status + agent avatars */}
             <div className="relative z-10">
               <div className="flex items-center justify-between">
-                <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-[10px] font-bold uppercase tracking-wider">
+                {/* Keep green dot — it's a universal "live" signal */}
+                <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700/50 text-slate-300 text-[10px] font-bold uppercase tracking-wider">
                   <span className="relative flex h-1.5 w-1.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
                   </span>
                   Support Online
                 </span>
+                {/* Shadcn-style minimal user avatars */}
                 <div className="flex -space-x-2">
-                  {[
-                    { e: '👩', g: 'from-purple-500 to-pink-500' },
-                    { e: '🧑‍💼', g: 'from-blue-500 to-cyan-400' },
-                    { e: '👨‍💻', g: 'from-emerald-500 to-teal-400' }
-                  ].map((a, i) => (
-                    <div key={i} className={`w-7 h-7 rounded-full bg-gradient-to-br ${a.g} flex items-center justify-center text-[11px] ring-2 ring-[#13151A]`}>
-                      {a.e}
+                  {[0, 1, 2].map((i) => (
+                    <div key={i} className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700/60 flex items-center justify-center ring-2 ring-[#0E0F14]">
+                      <User size={13} className="text-slate-400" />
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="mt-6 w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                <MessageSquare size={21} className="text-emerald-400" />
+              <div className="mt-6 w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/15 flex items-center justify-center">
+                <MessageSquare size={21} className="text-blue-400" />
               </div>
               <h3 className="text-xl font-extrabold text-white tracking-tight mt-4 leading-snug">
                 Still have questions?
@@ -644,7 +643,7 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
             <div className="relative z-10 mt-6 space-y-2.5">
               <a
                 href="mailto:hello@famly.app"
-                className="group flex items-center gap-3 p-3 rounded-xl bg-[#0C0D10]/70 border border-white/5 hover:border-emerald-500/30 transition-all"
+                className="group flex items-center gap-3 p-3 rounded-xl bg-[#0C0D10]/70 border border-white/5 hover:border-blue-500/20 transition-all"
               >
                 <div className="w-9 h-9 rounded-lg bg-blue-500/10 border border-blue-500/15 flex items-center justify-center text-blue-400 shrink-0">
                   <Mail size={15} />
@@ -653,10 +652,10 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
                   <div className="text-xs font-bold text-slate-200">Direct email support</div>
                   <div className="text-[10px] text-slate-500">hello@famly.app</div>
                 </div>
-                <ChevronRight size={15} className="text-slate-600 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                <ChevronRight size={15} className="text-slate-600 group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all shrink-0" />
               </a>
               <div className="flex items-center gap-3 p-3 rounded-xl bg-[#0C0D10]/70 border border-white/5">
-                <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/15 flex items-center justify-center text-emerald-400 shrink-0">
+                <div className="w-9 h-9 rounded-lg bg-slate-800/80 border border-slate-700/40 flex items-center justify-center text-slate-400 shrink-0">
                   <Zap size={15} />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -670,7 +669,7 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
             <div className="relative z-10 mt-auto pt-6">
               <a
                 href="mailto:hello@famly.app"
-                className="lp-cta-primary flex items-center justify-center gap-2 w-full bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-bold py-3 rounded-xl active:scale-95 shadow-lg shadow-emerald-900/30 cursor-pointer"
+                className="lp-cta-primary flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold py-3 rounded-xl active:scale-95 shadow-lg shadow-blue-900/20 cursor-pointer transition-colors duration-150"
               >
                 <MessageSquare size={15} />
                 Contact us

@@ -443,172 +443,205 @@ function FamilySetup({ onComplete }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#090A0F] flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden">
-      {/* Background radial glow matching landing page */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] lp-radial-glow pointer-events-none z-0 opacity-40" />
+    <div className="min-h-screen bg-[#050609] flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden">
 
-      {/* Unified Card Container in Landing Page colors */}
-      <motion.div 
-        className="w-full max-w-lg bg-[#16181D] border border-slate-800/60 rounded-xl p-6 sm:p-8 shadow-2xl relative z-10 space-y-6"
+      {/* ── Layered atmospheric background ── */}
+      <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.032)_1px,transparent_1px)] [background-size:28px_28px] pointer-events-none [mask-image:radial-gradient(ellipse_75%_75%_at_50%_50%,black,transparent)]" />
+      <div className="absolute -top-40 -left-28 w-[520px] h-[520px] bg-blue-700/7 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-24 -right-20 w-[400px] h-[400px] bg-indigo-600/6 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-2/5 left-1/2 -translate-x-1/2 w-[700px] h-[220px] bg-blue-900/10 rounded-full blur-[100px] pointer-events-none" />
+
+      {/* ── Card ── */}
+      <motion.div
+        className="w-full max-w-lg relative z-10"
         variants={containerVariants}
         initial="hidden"
         animate="show"
       >
-        
-        {/* Card Header (Centered logo only, styled bigger) */}
-        <motion.div className="text-center pb-2" variants={itemVariants}>
-          <div className="flex items-center justify-center mb-4">
-            <img src={logo} alt="Famly" className="h-20 w-auto object-contain" />
-          </div>
-          <h2 className="text-xl font-bold tracking-tight text-slate-100">Set up family workspace</h2>
-          <p className="text-slate-400 text-xs mt-1">Configure your family ledger workspace to begin tracking assets</p>
-        </motion.div>
+        {/* Gradient border ring */}
+        <div className="absolute -inset-[1px] rounded-[22px] bg-gradient-to-b from-white/9 via-white/3 to-transparent pointer-events-none z-20" />
 
-        <motion.div className="h-px bg-slate-800/40" variants={itemVariants} />
+        <div className="relative bg-gradient-to-b from-[#131621] via-[#0F1118] to-[#0C0E15] rounded-[21px] p-8 shadow-[0_32px_80px_rgba(0,0,0,0.75)] space-y-7">
+          {/* Inner top highlight line */}
+          <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
 
-        {/* Family Name Field */}
-        <motion.div className="space-y-1.5" variants={itemVariants}>
-          <label className="text-[10px] uppercase text-slate-400 font-semibold tracking-wider block">Family Workspace Name</label>
-          <input
-            type="text"
-            placeholder="e.g. The Salinas Family"
-            value={familyName}
-            onChange={e => setFamilyName(e.target.value)}
-            className="w-full bg-[#090A0F] border border-slate-800/80 rounded-md px-3.5 py-2 text-sm text-slate-200 placeholder-slate-650 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all duration-200"
-          />
-        </motion.div>
-
-        {/* Family Members Section */}
-        <motion.div className="space-y-3" variants={itemVariants}>
-          <div className="flex items-center justify-between">
-            <div>
-              <label className="text-[10px] uppercase text-slate-400 font-semibold tracking-wider block">Workspace Members</label>
-              <span className="text-[10px] text-slate-550">Add family members to manage their tracking dashboards</span>
+          {/* ── Header ── */}
+          <motion.div className="text-center" variants={itemVariants}>
+            <div className="inline-flex items-center justify-center mb-4">
+              <img src={logo} alt="Famly" className="h-14 w-auto object-contain" />
             </div>
-            <motion.button
-              whileHover={members.length >= memberLimit ? {} : { scale: 1.02, backgroundColor: "rgba(255, 255, 255, 0.05)" }}
-              whileTap={members.length >= memberLimit ? {} : { scale: 0.97 }}
-              type="button"
-              disabled={members.length >= memberLimit}
-              onClick={() => { setEditingIndex(null); setShowModal(true) }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-xs font-semibold transition-colors ${
-                members.length >= memberLimit
-                  ? 'border-slate-900 text-slate-650 cursor-not-allowed opacity-50'
-                  : 'border-slate-800/80 text-slate-200 hover:bg-slate-800/30'
-              }`}
-            >
-              <Plus size={11} /> Add Member
-            </motion.button>
-          </div>
+            <h2 className="text-[22px] font-extrabold tracking-tight leading-tight">
+              <span className="text-white">Set up your </span>
+              <span className="bg-gradient-to-r from-blue-400 to-sky-300 bg-clip-text text-transparent">family workspace</span>
+            </h2>
+            <p className="text-slate-500 text-xs mt-2.5 leading-relaxed max-w-[300px] mx-auto">
+              Your household's shared financial OS — assign roles, track milestones, and stay aligned.
+            </p>
+          </motion.div>
 
-          {/* Members List Box */}
-          {members.length === 0 ? (
-            <motion.div 
-              className="text-center py-8 text-slate-500 text-xs border border-dashed rounded-lg bg-[#090A0F]/55"
-              animate={{ borderColor: ["rgba(255, 255, 255, 0.05)", "rgba(255, 255, 255, 0.15)", "rgba(255, 255, 255, 0.05)"] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <Users size={20} className="mx-auto mb-2 opacity-35 text-slate-400" />
-              <span>No members added. Click Add Member to include someone.</span>
-            </motion.div>
-          ) : (
-            <div className="space-y-3">
-              <motion.ul layout className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-                <AnimatePresence mode="popLayout">
-                  {members.map((m, i) => {
-                    const dt = dtForMember(m.dashboardType)
-                    const Icon = dt?.icon || BookOpen
-                    return (
-                      <motion.li 
-                        key={m.id} 
-                        layout
-                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: -10 }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 26 }}
-                        className="flex items-center gap-3 p-2 bg-[#090A0F]/75 border border-slate-800/50 rounded-md"
-                      >
-                        <div className={`w-8 h-8 rounded ${m.image ? '' : getBgClass(m.gradient)} flex items-center justify-center overflow-hidden flex-shrink-0`}>
-                          {m.image ? (
-                            <img src={m.image} alt={m.name} className="w-full h-full object-cover" />
-                          ) : (
-                            renderAvatarContent(m.emoji, m.name, 14)
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold text-slate-200 truncate">{m.name}</p>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            {m.role && <p className="text-[10px] text-slate-500 truncate">{m.role}</p>}
-                            <span className={`inline-flex items-center gap-1 text-[9px] font-medium px-1.5 py-0.5 rounded border border-slate-800/40 ${dt?.color}`}>
-                              <Icon size={8} /> {dt?.label}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1 flex-shrink-0">
-                          <button
-                            onClick={() => handleEdit(i)}
-                            className="p-1 rounded text-slate-450 hover:text-slate-200 hover:bg-slate-800/40 transition-colors"
-                          >
-                            <Edit2 size={11} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(i)}
-                            className="p-1 rounded text-slate-455 hover:text-red-400 hover:bg-red-950/20 transition-colors"
-                          >
-                            <Trash2 size={11} />
-                          </button>
-                        </div>
-                      </motion.li>
-                    )
-                  })}
-                </AnimatePresence>
-              </motion.ul>
+          {/* ── Section divider ── */}
+          <motion.div variants={itemVariants} className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent to-slate-800/70" />
+            <span className="text-[9px] font-bold text-slate-600 uppercase tracking-[0.2em]">workspace config</span>
+            <div className="flex-1 h-px bg-gradient-to-l from-transparent to-slate-800/70" />
+          </motion.div>
 
-              {members.length >= memberLimit && (
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="bg-blue-900/10 border border-blue-500/20 rounded-lg p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
-                >
-                  <div className="text-slate-300">
-                    <span className="font-bold text-blue-400">STARTER Tier Limit Reached:</span> You can only have 1 member on the free tier.
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleSimulatedUpgrade}
-                    className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded text-[11px] font-bold self-start sm:self-auto transition-colors cursor-pointer"
-                  >
-                    Upgrade to Family
-                  </button>
-                </motion.div>
+          {/* ── Family Name Field ── */}
+          <motion.div className="space-y-2" variants={itemVariants}>
+            <label className="text-[10px] uppercase text-slate-400 font-bold tracking-[0.15em] block">
+              Family Workspace Name
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="e.g. The Rivera Family"
+                value={familyName}
+                onChange={e => setFamilyName(e.target.value)}
+                className="w-full bg-[#09090F]/90 border border-slate-800/90 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500/35 focus:border-blue-600/50 transition-all duration-200 shadow-inner"
+              />
+              {familyName.trim() && (
+                <div className="absolute right-3.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
               )}
             </div>
-          )}
-        </motion.div>
+          </motion.div>
 
-        <motion.div className="h-px bg-slate-800/40 pt-1" variants={itemVariants} />
+          {/* ── Members Section ── */}
+          <motion.div className="space-y-3" variants={itemVariants}>
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-[10px] uppercase text-slate-400 font-bold tracking-[0.15em] block">
+                  Workspace Members
+                </label>
+                <span className="text-[10px] text-slate-600">Assign each member a dedicated dashboard</span>
+              </div>
+              <motion.button
+                whileHover={members.length >= memberLimit ? {} : { scale: 1.03 }}
+                whileTap={members.length >= memberLimit ? {} : { scale: 0.96 }}
+                type="button"
+                disabled={members.length >= memberLimit}
+                onClick={() => { setEditingIndex(null); setShowModal(true) }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${
+                  members.length >= memberLimit
+                    ? 'border-slate-900 text-slate-600 cursor-not-allowed opacity-40'
+                    : 'border-slate-700/60 bg-slate-800/30 text-slate-300 hover:bg-slate-800/60 hover:border-slate-600/60 hover:text-slate-100'
+                }`}
+              >
+                <Plus size={10} /> Add Member
+              </motion.button>
+            </div>
 
-        {/* CTA Launch Button */}
-        <motion.div variants={itemVariants}>
-          <motion.button
-            whileHover={{ 
-              scale: 1.01,
-              boxShadow: "0 0 15px rgba(16, 185, 129, 0.2)"
-            }}
-            whileTap={{ scale: 0.97 }}
-            transition={{ type: "spring", stiffness: 400, damping: 20 }}
-            onClick={handleSave}
-            disabled={!familyName.trim() || members.length === 0}
-            className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-md text-xs font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-md shadow-blue-900/10 border border-blue-500/10 cursor-pointer"
-          >
-            <span className="flex items-center justify-center gap-1.5">
-              Launch Workspace <ChevronRight size={13} />
-            </span>
-          </motion.button>
-        </motion.div>
+            {members.length === 0 ? (
+              <motion.div
+                className="text-center py-9 border border-dashed rounded-xl bg-slate-900/20 relative overflow-hidden"
+                animate={{ borderColor: ['rgba(255,255,255,0.05)', 'rgba(255,255,255,0.11)', 'rgba(255,255,255,0.05)'] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.03),transparent_70%)]" />
+                <Users size={22} className="mx-auto mb-2.5 text-slate-600" />
+                <p className="text-xs text-slate-600 font-medium">No members yet</p>
+                <p className="text-[10px] text-slate-700 mt-0.5">Click <span className="text-slate-500 font-semibold">Add Member</span> to get started</p>
+              </motion.div>
+            ) : (
+              <div className="space-y-3">
+                <motion.ul layout className="space-y-1.5 max-h-52 overflow-y-auto pr-1">
+                  <AnimatePresence mode="popLayout">
+                    {members.map((m, i) => {
+                      const dt = dtForMember(m.dashboardType)
+                      const Icon = dt?.icon || BookOpen
+                      const accentColor =
+                        dt?.value === 'tuition' ? 'bg-blue-500/55' :
+                        dt?.value === 'milestone' ? 'bg-emerald-500/55' :
+                        dt?.value === 'debt' ? 'bg-rose-500/55' :
+                        'bg-amber-500/55'
+                      return (
+                        <motion.li
+                          key={m.id}
+                          layout
+                          initial={{ opacity: 0, scale: 0.95, y: 8 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.95, y: -8 }}
+                          transition={{ type: 'spring', stiffness: 400, damping: 26 }}
+                          className="flex items-center gap-3 p-2.5 bg-slate-900/50 border border-slate-800/50 rounded-xl relative overflow-hidden hover:border-slate-700/60 transition-colors group"
+                        >
+                          {/* Left accent bar */}
+                          <div className={`absolute left-0 top-2.5 bottom-2.5 w-[2.5px] rounded-full ${accentColor}`} />
+                          <div className={`w-8 h-8 rounded-lg ml-1 ${m.image ? '' : getBgClass(m.gradient)} flex items-center justify-center overflow-hidden flex-shrink-0`}>
+                            {m.image ? (
+                              <img src={m.image} alt={m.name} className="w-full h-full object-cover" />
+                            ) : (
+                              renderAvatarContent(m.emoji, m.name, 14)
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-semibold text-slate-200 truncate">{m.name}</p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              {m.role && <p className="text-[10px] text-slate-500 truncate">{m.role}</p>}
+                              <span className={`inline-flex items-center gap-1 text-[9px] font-medium px-1.5 py-0.5 rounded-md border ${dt?.color}`}>
+                                <Icon size={7} /> {dt?.label}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-0.5 flex-shrink-0">
+                            <button onClick={() => handleEdit(i)} className="p-1.5 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-slate-800/60 transition-all">
+                              <Edit2 size={11} />
+                            </button>
+                            <button onClick={() => handleDelete(i)} className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-950/30 transition-all">
+                              <Trash2 size={11} />
+                            </button>
+                          </div>
+                        </motion.li>
+                      )
+                    })}
+                  </AnimatePresence>
+                </motion.ul>
+
+                {members.length >= memberLimit && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-blue-900/10 border border-blue-500/20 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                  >
+                    <div className="text-slate-300">
+                      <span className="font-bold text-blue-400">STARTER Limit:</span> Upgrade to add unlimited members.
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleSimulatedUpgrade}
+                      className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[11px] font-bold self-start sm:self-auto transition-colors cursor-pointer"
+                    >
+                      Upgrade → Family
+                    </button>
+                  </motion.div>
+                )}
+              </div>
+            )}
+          </motion.div>
+
+          {/* ── Divider ── */}
+          <motion.div variants={itemVariants} className="h-px bg-gradient-to-r from-transparent via-slate-800/70 to-transparent" />
+
+          {/* ── CTA Button ── */}
+          <motion.div variants={itemVariants}>
+            <motion.button
+              whileHover={{ scale: 1.01, boxShadow: '0 0 28px rgba(59,130,246,0.22)' }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              onClick={handleSave}
+              disabled={!familyName.trim() || members.length === 0}
+              className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed shadow-lg shadow-blue-900/30 border border-blue-400/10 cursor-pointer"
+            >
+              <span className="flex items-center justify-center gap-2">
+                Launch Workspace
+                <ChevronRight size={15} />
+              </span>
+            </motion.button>
+            <p className="text-[10px] text-slate-600 text-center mt-3 leading-relaxed">
+              Your data stays private and scoped to your household account
+            </p>
+          </motion.div>
+        </div>
       </motion.div>
 
-      {/* AnimatePresence placed here on the parent triggers exiting animations correctly */}
       <AnimatePresence>
         {showModal && (
           <MemberModal

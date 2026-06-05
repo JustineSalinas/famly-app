@@ -1,7 +1,7 @@
 // src/components/ui/FamlyFeatures.jsx
 import { useState, useEffect, useRef } from 'react'
 import { motion, useAnimation, animate } from 'framer-motion'
-import { TrendingDown, GraduationCap, PiggyBank, Users } from 'lucide-react'
+import { TrendingDown, GraduationCap, PiggyBank, Users, User } from 'lucide-react'
 
 /* ─────────────────────────────────────────
    Shared spring for the card hover scale
@@ -261,9 +261,9 @@ function MilestoneSyncCard() {
    CARD 4  —  One Login, Personalized Dashboards
 ─────────────────────────────────────────────────────────────── */
 const profiles = [
-  { name: 'Mom',  emoji: '👩', gradient: 'from-purple-600 to-pink-500',   role: 'Debt + Planner' },
-  { name: 'Kuya', emoji: '👦', gradient: 'from-blue-600 to-blue-400',     role: 'Tuition' },
-  { name: 'Ate',  emoji: '👧', gradient: 'from-emerald-600 to-teal-400',  role: 'Milestone' },
+  { name: 'Mom',  Icon: User,         role: 'Debt + Planner' },
+  { name: 'Kuya', Icon: GraduationCap, role: 'Tuition' },
+  { name: 'Ate',  Icon: PiggyBank,     role: 'Milestone' },
 ]
 
 function ProfileSwitcherCard() {
@@ -309,7 +309,7 @@ function ProfileSwitcherCard() {
         <div>
           <h3 className="text-sm font-bold text-white leading-snug">One Login, Personalized Dashboards</h3>
           <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-            A single household login with Netflix-style profile selection — everyone sees only their financial focus.
+            Each member steps into their own focused workspace. One household login, four dedicated lanes—financial clarity for everyone, zero noise.
           </p>
         </div>
       </div>
@@ -328,13 +328,15 @@ function ProfileSwitcherCard() {
                 transition={{ type: 'spring', stiffness: 300, damping: 18 }}
                 className="flex flex-col items-center gap-1.5 flex-1 cursor-pointer"
               >
-                {/* Avatar ring on active */}
-                <div className={`p-[2px] rounded-full transition-all duration-300 ${
-                  isActive ? 'ring-1 ring-white/15' : ''
+                {/* Avatar — shadcn-style minimal */}
+                <div className={`p-[2px] rounded-xl transition-all duration-300 ${
+                  isActive ? 'ring-1 ring-blue-500/25' : ''
                 }`}>
-                  <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${p.gradient} flex items-center justify-center text-lg opacity-${isActive ? '100' : '50'} transition-opacity duration-300`}
-                    style={{ opacity: isActive ? 1 : 0.4 }}>
-                    {p.emoji}
+                  <div
+                    className="w-10 h-10 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center transition-all duration-300"
+                    style={{ opacity: isActive ? 1 : 0.3 }}
+                  >
+                    <p.Icon size={16} className={`transition-colors duration-300 ${isActive ? 'text-slate-200' : 'text-slate-600'}`} />
                   </div>
                 </div>
 
