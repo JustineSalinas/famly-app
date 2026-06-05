@@ -52,7 +52,7 @@ export function useSyncedState(key, defaultValue) {
 
   const updateState = async (newValue) => {
     if (!user) return
-    
+
     if (!isFirebaseConfigured) {
       const storageKey = `famly_mock_state_${user.uid}_${key}`
       localStorage.setItem(storageKey, JSON.stringify(newValue))
@@ -60,11 +60,16 @@ export function useSyncedState(key, defaultValue) {
       return
     }
 
+    // Optimistic update — apply immediately, revert on failure
+    const previous = state
+    setState(newValue)
+
     const docRef = doc(db, 'users', user.uid, 'dashboardData', key)
     try {
       await setDoc(docRef, { value: newValue })
     } catch (err) {
       console.error(`Firestore write error for key ${key}:`, err)
+      setState(previous)
     }
   }
 

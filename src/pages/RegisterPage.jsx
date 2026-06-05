@@ -1,11 +1,13 @@
 // src/pages/RegisterPage.jsx
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import logo from '../assets/famly.png'
-import { AlertCircle, ArrowRight } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 
 export default function RegisterPage({ onSwitchToLogin, plan = 'STARTER', initialEmail = '' }) {
+  const navigate = useNavigate()
   const { register, isFirebaseConfigured } = useAuth()
   const [familyName, setFamilyName] = useState('')
   const [email, setEmail] = useState(initialEmail)
@@ -30,7 +32,7 @@ export default function RegisterPage({ onSwitchToLogin, plan = 'STARTER', initia
     setLoading(true)
     try {
       await register(email, password, familyName, plan)
-      // Auth state updates via onAuthStateChanged → App re-renders to show family setup
+      navigate('/app', { replace: true })
     } catch (err) {
       setError(getFriendlyError(err.code))
     } finally {

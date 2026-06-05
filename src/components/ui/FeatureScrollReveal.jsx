@@ -89,7 +89,7 @@ const GROUPS = [
     items: [
       { icon: Shield, accent: 'emerald', name: 'Liquidity Vault', desc: 'Monitor emergency backing across every cash reserve.', tag: 'Reserves' },
       { icon: TrendingUp, accent: 'blue', name: 'Inbound Cashflow', desc: 'Project monthly runway from each income stream.', tag: 'Runway' },
-      { icon: Users, accent: 'emerald', name: 'Personalized Profiles', desc: 'One account, Netflix-style profiles per family member.', tag: 'Per-member' }
+      { icon: Users, accent: 'emerald', name: 'Personalized Profiles', desc: 'One account, dedicated workspace per family member.', tag: 'Per-member' }
     ]
   }
 ]

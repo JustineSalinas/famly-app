@@ -1,4 +1,5 @@
 import { useState, useEffect, Component } from 'react'
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { ProfileSelectionRoot } from './components/ProfileSelection'
 import Dashboard from './components/Dashboard'
@@ -6,88 +7,136 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import LandingPage from './pages/LandingPage'
 
-function AppInner() {
-  const { user, logout } = useAuth()
-  const [selectedProfile, setSelectedProfile] = useState(null)
-  // 'landing' | 'login' | 'register' | 'app'
-  const [authMode, setAuthMode] = useState('landing')
-  const [selectedPlan, setSelectedPlan] = useState('STARTER')
-  const [initialEmail, setInitialEmail] = useState('')
+// ─── Auth Guard: redirects unauthenticated users to /login ────
+function RequireAuth({ children }) {
+  const { user } = useAuth()
+  const location = useLocation()
+  if (user === undefined) return <LoadingSpinner />
+  if (user === null) return <Navigate to="/login" state={{ from: location }} replace />
+  return children
+}
 
-  // Auto-route to app on login/register success, and back to landing on sign out
-  useEffect(() => {
-    if (user !== null && (authMode === 'login' || authMode === 'register')) {
-      setAuthMode('app')
-    }
-    if (user === null && authMode === 'app') {
-      setAuthMode('landing')
-    }
-  }, [user, authMode])
+// ─── Guest Guard: redirects logged-in users to /app ──────────
+function RequireGuest({ children }) {
+  const { user } = useAuth()
+  if (user === undefined) return <LoadingSpinner />
+  if (user !== null) return <Navigate to="/app" replace />
+  return children
+}
 
-  // Still checking auth state (Firebase onAuthStateChanged hasn't fired yet)
-  if (user === undefined) {
-    return (
-      <div style={{ minHeight: '100vh', background: '#050507', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ width: 24, height: 24, border: '2px solid #0066FF', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      </div>
-    )
-  }
-
-  // If logged in AND authMode is 'app', enter the profile/dashboard workspace
-  if (user !== null && authMode === 'app') {
-    if (selectedProfile === null) {
-      return <ProfileSelectionRoot onSelect={setSelectedProfile} />
-    }
-    return (
-      <Dashboard
-        profile={selectedProfile}
-        onSwitch={() => setSelectedProfile(null)}
-      />
-    )
-  }
-
-  // Not logged in OR authMode is not 'app' → show landing / auth pages
-  if (authMode === 'landing') {
-    return (
-      <LandingPage
-        user={user}
-        onLogout={logout}
-        onGetStarted={(mode = 'login', plan = 'STARTER', email = '') => {
-          if (mode === 'app') {
-            setAuthMode('app')
-          } else {
-            setAuthMode(mode)
-            setSelectedPlan(plan)
-            setInitialEmail(email)
-          }
-        }}
-      />
-    )
-  }
-
-  if (authMode === 'register') {
-    return (
-      <RegisterPage
-        onSwitchToLogin={() => setAuthMode('login')}
-        plan={selectedPlan}
-        initialEmail={initialEmail}
-      />
-    )
-  }
-
+function LoadingSpinner() {
   return (
-    <LoginPage
-      onSwitchToRegister={() => {
-        setSelectedPlan('STARTER')
-        setInitialEmail('')
-        setAuthMode('register')
-      }}
-      onBack={() => setAuthMode('landing')}
+    <div style={{ minHeight: '100vh', background: '#050507', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: 24, height: 24, border: '2px solid #0066FF', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  )
+}
+
+// ─── App Workspace (profile selection + dashboard) ────────────
+function AppWorkspace() {
+  const [selectedProfile, setSelectedProfile] = useState(null)
+
+  if (selectedProfile === null) {
+    return <ProfileSelectionRoot onSelect={setSelectedProfile} />
+  }
+  return (
+    <Dashboard
+      profile={selectedProfile}
+      onSwitch={() => setSelectedProfile(null)}
     />
   )
 }
 
+// ─── Landing wrapper — passes nav helpers to LandingPage ─────
+function LandingWrapper() {
+  const navigate = useNavigate()
+  const { user, logout } = useAuth()
+
+  return (
+    <LandingPage
+      user={user}
+      onLogout={logout}
+      onGetStarted={(mode = 'login', plan = 'STARTER', email = '') => {
+        if (mode === 'app') {
+          navigate('/app')
+        } else if (mode === 'register') {
+          navigate('/register', { state: { plan, email } })
+        } else {
+          navigate('/login')
+        }
+      }}
+    />
+  )
+}
+
+// ─── Register wrapper — receives plan/email from router state ─
+function RegisterWrapper() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { plan = 'STARTER', email = '' } = location.state || {}
+
+  return (
+    <RegisterPage
+      onSwitchToLogin={() => navigate('/login')}
+      plan={plan}
+      initialEmail={email}
+    />
+  )
+}
+
+// ─── Login wrapper ────────────────────────────────────────────
+function LoginWrapper() {
+  const navigate = useNavigate()
+
+  return (
+    <LoginPage
+      onSwitchToRegister={() => navigate('/register', { state: { plan: 'STARTER', email: '' } })}
+      onBack={() => navigate('/')}
+    />
+  )
+}
+
+// ─── Inner router (needs AuthContext already mounted) ─────────
+function AppInner() {
+  return (
+    <Routes>
+      <Route path="/" element={<LandingWrapper />} />
+
+      <Route
+        path="/login"
+        element={
+          <RequireGuest>
+            <LoginWrapper />
+          </RequireGuest>
+        }
+      />
+
+      <Route
+        path="/register"
+        element={
+          <RequireGuest>
+            <RegisterWrapper />
+          </RequireGuest>
+        }
+      />
+
+      <Route
+        path="/app/*"
+        element={
+          <RequireAuth>
+            <AppWorkspace />
+          </RequireAuth>
+        }
+      />
+
+      {/* Catch-all */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  )
+}
+
+// ─── Error Boundary ───────────────────────────────────────────
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props)
@@ -99,7 +148,7 @@ class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error("ErrorBoundary caught an error:", error, errorInfo)
+    console.error('ErrorBoundary caught an error:', error, errorInfo)
   }
 
   render() {
@@ -112,7 +161,7 @@ class ErrorBoundary extends Component {
               <h2 className="text-base font-bold text-red-400">Application Error</h2>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
-              An unexpected error occurred in the React rendering tree. This is usually caused by a Firebase initialization, configuration, or database rules issue.
+              An unexpected error occurred. This is usually caused by a Firebase initialization or configuration issue.
             </p>
             <div className="bg-[#090A0F] border border-white/5 rounded-xl p-3 text-[10px] font-mono text-red-300 overflow-auto max-h-40 whitespace-pre-wrap">
               {this.state.error?.toString() || 'Unknown Error'}
@@ -130,12 +179,11 @@ class ErrorBoundary extends Component {
         </div>
       )
     }
-
     return this.props.children
   }
 }
 
-// ─── Root: wraps everything with AuthProvider ─────────────────
+// ─── Root ─────────────────────────────────────────────────────
 export default function App() {
   return (
     <ErrorBoundary>

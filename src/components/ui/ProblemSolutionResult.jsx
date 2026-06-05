@@ -21,7 +21,7 @@ export default function ProblemSolutionResult() {
       headline: "A unified operating ledger for the household",
       highlightText: "Famly structures every obligation under a secure, real-time shared workspace.",
       body: "Our work connects every family member under a centralized Firestore database, enabling dedicated modules for tuition, milestone goals, active liabilities, and monthly subscription utility checkouts. Everyone coordinates in real time.",
-      subText: "Netflix-style profile switching grants individuals agency over their specific financial dashboards.",
+      subText: "Each member steps into their own focused workspace — one login, four dedicated financial lanes.",
       highlightStyle: "bg-blue-500/10 text-blue-300 border-blue-500/20"
     },
     {

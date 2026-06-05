@@ -12,7 +12,7 @@ import { auth, db, isFirebaseConfigured } from '../firebase'
 
 const AuthContext = createContext(null)
 
-// Helper for Mock DB operations
+// ── Mock DB helpers ────────────────────────────────────────────
 const getMockDB = () => {
   try {
     return JSON.parse(localStorage.getItem('famly_mock_users_db') || '{}')
@@ -20,8 +20,21 @@ const getMockDB = () => {
     return {}
   }
 }
-const saveMockDB = (db) => {
-  localStorage.setItem('famly_mock_users_db', JSON.stringify(db))
+const saveMockDB = (data) => {
+  localStorage.setItem('famly_mock_users_db', JSON.stringify(data))
+}
+
+// Simple hash for mock mode — not cryptographic, just avoids plaintext.
+// Production uses Firebase Auth which handles hashing server-side.
+async function hashPassword(password) {
+  const msgBuffer = new TextEncoder().encode(password)
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+async function verifyPassword(password, hash) {
+  return (await hashPassword(password)) === hash
 }
 
 export function AuthProvider({ children }) {
@@ -29,7 +42,6 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     if (!isFirebaseConfigured) {
-      // LocalStorage Mock mode
       const savedUser = localStorage.getItem('famly_mock_user')
       if (savedUser) {
         try {
@@ -53,13 +65,13 @@ export function AuthProvider({ children }) {
             plan = docSnap.data().plan || 'STARTER'
           }
         } catch (e) {
-          console.error("Firestore user plan sync error:", e)
+          console.error('Firestore user plan sync error:', e)
         }
         setUser({
           uid: firebaseUser.uid,
           email: firebaseUser.email,
           displayName: firebaseUser.displayName,
-          plan
+          plan,
         })
       } else {
         setUser(null)
@@ -73,17 +85,28 @@ export function AuthProvider({ children }) {
       const dbMock = getMockDB()
       const normalizedEmail = email.toLowerCase().trim()
       const mockUser = dbMock[normalizedEmail]
-      if (!mockUser || mockUser.password !== password) {
+      if (!mockUser) {
         const err = new Error('Incorrect email or password.')
         err.code = 'auth/invalid-credential'
         throw err
       }
-      const userSession = { uid: mockUser.uid, email: mockUser.email, displayName: mockUser.displayName, plan: mockUser.plan || 'STARTER' }
+      const valid = await verifyPassword(password, mockUser.passwordHash)
+      if (!valid) {
+        const err = new Error('Incorrect email or password.')
+        err.code = 'auth/invalid-credential'
+        throw err
+      }
+      const userSession = {
+        uid: mockUser.uid,
+        email: mockUser.email,
+        displayName: mockUser.displayName,
+        plan: mockUser.plan || 'STARTER',
+      }
       localStorage.setItem('famly_mock_user', JSON.stringify(userSession))
       setUser(userSession)
       return { user: userSession }
     }
-    
+
     return signInWithEmailAndPassword(auth, email, password).then(async (cred) => {
       let plan = 'STARTER'
       try {
@@ -93,13 +116,13 @@ export function AuthProvider({ children }) {
           plan = docSnap.data().plan || 'STARTER'
         }
       } catch (err) {
-        console.error("Firestore fetch user plan error:", err)
+        console.error('Firestore fetch user plan error:', err)
       }
       setUser({
         uid: cred.user.uid,
         email: cred.user.email,
         displayName: cred.user.displayName,
-        plan
+        plan,
       })
       return cred
     })
@@ -114,8 +137,15 @@ export function AuthProvider({ children }) {
         err.code = 'auth/email-already-in-use'
         throw err
       }
-      const uid = 'mock_' + Math.random().toString(36).substr(2, 9)
-      const newUser = { uid, email: normalizedEmail, password, displayName: displayName || 'Family', plan }
+      const uid = 'mock_' + crypto.randomUUID().replace(/-/g, '').slice(0, 12)
+      const passwordHash = await hashPassword(password)
+      const newUser = {
+        uid,
+        email: normalizedEmail,
+        passwordHash,
+        displayName: displayName || 'Family',
+        plan,
+      }
       dbMock[normalizedEmail] = newUser
       saveMockDB(dbMock)
 
@@ -125,23 +155,27 @@ export function AuthProvider({ children }) {
       return { user: userSession }
     }
 
-    return createUserWithEmailAndPassword(auth, email, password).then(async (cred) => {
-      if (displayName) {
-        await updateProfile(cred.user, { displayName })
-      }
-      try {
-        await setDoc(doc(db, 'users', cred.user.uid), { plan })
-      } catch (err) {
-        console.error("Firestore set user plan error:", err)
-      }
-      setUser({
-        uid: cred.user.uid,
-        email: cred.user.email,
-        displayName: displayName || cred.user.displayName,
-        plan
-      })
-      return cred
+    const cred = await createUserWithEmailAndPassword(auth, email, password)
+    if (displayName) {
+      await updateProfile(cred.user, { displayName })
+    }
+
+    let resolvedPlan = 'STARTER'
+    try {
+      await setDoc(doc(db, 'users', cred.user.uid), { plan })
+      resolvedPlan = plan
+    } catch (err) {
+      console.error('Firestore set user plan error:', err)
+      // Firestore write failed — user is registered but plan defaults to STARTER
+    }
+
+    setUser({
+      uid: cred.user.uid,
+      email: cred.user.email,
+      displayName: displayName || cred.user.displayName,
+      plan: resolvedPlan,
     })
+    return cred
   }
 
   const logout = async () => {

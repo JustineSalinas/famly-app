@@ -86,7 +86,7 @@ export default function ScrollStorySection({ currency, onGetStarted, user }) {
         >
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
-            Netflix-Style Family Sync
+            Your Family's Financial OS
           </div>
 
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-100 leading-[1.1] max-w-2xl">
@@ -218,7 +218,7 @@ export default function ScrollStorySection({ currency, onGetStarted, user }) {
             {/* Intro Pill */}
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
-              Netflix-Style Family Sync
+              Your Family's Financial OS
             </div>
 
             {/* Headline */}

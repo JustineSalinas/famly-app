@@ -1,15 +1,19 @@
-// src/pages/LoginPage.jsx
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { sendPasswordResetEmail } from 'firebase/auth'
 import { useAuth } from '../context/AuthContext'
+import { auth, isFirebaseConfigured } from '../firebase'
 import logo from '../assets/famly.png'
 
 export default function LoginPage({ onSwitchToRegister, onBack }) {
-
-  const { login, isFirebaseConfigured } = useAuth()
+  const navigate = useNavigate()
+  const { login } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [resetSent, setResetSent] = useState(false)
+  const [resetLoading, setResetLoading] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -17,7 +21,7 @@ export default function LoginPage({ onSwitchToRegister, onBack }) {
     setLoading(true)
     try {
       await login(email, password)
-      // Auth state will update via onAuthStateChanged → App re-renders
+      navigate('/app', { replace: true })
     } catch (err) {
       setError(getFriendlyError(err.code))
     } finally {
@@ -25,16 +29,35 @@ export default function LoginPage({ onSwitchToRegister, onBack }) {
     }
   }
 
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      setError('Enter your email address above, then click Forgot password.')
+      return
+    }
+    if (!isFirebaseConfigured) {
+      setError('Password reset is only available when Firebase is configured.')
+      return
+    }
+    setResetLoading(true)
+    setError('')
+    try {
+      await sendPasswordResetEmail(auth, email.trim())
+      setResetSent(true)
+    } catch (err) {
+      setError(getFriendlyError(err.code))
+    } finally {
+      setResetLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#090A0F] flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden font-sans">
-      {/* Background glow */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.05) 0%, transparent 60%)' }}
       />
 
       <div className="w-full max-w-sm relative z-10">
-        {/* Back link */}
         {onBack && (
           <button
             onClick={onBack}
@@ -44,7 +67,6 @@ export default function LoginPage({ onSwitchToRegister, onBack }) {
           </button>
         )}
 
-        {/* Logo */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-1">
             <img src={logo} alt="Famly" className="h-8 object-contain" />
@@ -53,11 +75,17 @@ export default function LoginPage({ onSwitchToRegister, onBack }) {
           <p className="text-slate-400 text-xs mt-1">Sign in to your family ledger dashboard</p>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="bg-[#16181D] border border-slate-800/60 rounded-xl p-6 space-y-4 shadow-xl">
           {!isFirebaseConfigured && (
             <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg px-4 py-2.5 text-[11px] text-blue-400 leading-relaxed">
-              ⚡ <strong>Demo Mode Active</strong>: Firebase configuration is missing in <code className="bg-[#090A0F] px-1 py-0.5 rounded text-[10px] text-slate-300">.env</code>. Running locally via LocalStorage.
+              ⚡ <strong>Demo Mode Active</strong>: Firebase configuration is missing in{' '}
+              <code className="bg-[#090A0F] px-1 py-0.5 rounded text-[10px] text-slate-300">.env</code>. Running locally via LocalStorage.
+            </div>
+          )}
+
+          {resetSent && (
+            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-4 py-2.5 text-xs text-emerald-400">
+              Password reset email sent. Check your inbox.
             </div>
           )}
 
@@ -70,7 +98,6 @@ export default function LoginPage({ onSwitchToRegister, onBack }) {
           <div>
             <label className="text-xs font-semibold text-slate-400 block mb-1.5">Email address</label>
             <input
-              id="login-email"
               type="email"
               required
               autoComplete="email"
@@ -82,9 +109,18 @@ export default function LoginPage({ onSwitchToRegister, onBack }) {
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-slate-400 block mb-1.5">Password</label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-semibold text-slate-400">Password</label>
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                disabled={resetLoading}
+                className="text-[11px] text-slate-500 hover:text-blue-400 transition-colors disabled:opacity-50"
+              >
+                {resetLoading ? 'Sending…' : 'Forgot password?'}
+              </button>
+            </div>
             <input
-              id="login-password"
               type="password"
               required
               autoComplete="current-password"
@@ -96,7 +132,6 @@ export default function LoginPage({ onSwitchToRegister, onBack }) {
           </div>
 
           <button
-            id="login-submit"
             type="submit"
             disabled={loading}
             className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-semibold transition-all active:scale-95 duration-75 shadow-sm disabled:opacity-60"
@@ -105,11 +140,9 @@ export default function LoginPage({ onSwitchToRegister, onBack }) {
           </button>
         </form>
 
-        {/* Switch to register */}
         <p className="text-center text-xs text-slate-500 mt-5">
           No account yet?{' '}
           <button
-            id="switch-to-register"
             onClick={onSwitchToRegister}
             className="text-blue-400 hover:text-blue-300 font-semibold transition-colors active:scale-95 duration-75"
           >
@@ -117,7 +150,6 @@ export default function LoginPage({ onSwitchToRegister, onBack }) {
           </button>
         </p>
 
-        {/* Scripture footer */}
         <p className="text-center text-slate-600 text-[10px] uppercase tracking-widest font-bold mt-8">
           "I can do all things through Christ who strengthens me."
         </p>

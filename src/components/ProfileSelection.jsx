@@ -400,8 +400,18 @@ function FamilySetup({ onComplete }) {
 
   const handleSave = async () => {
     if (!familyName.trim() || members.length === 0 || !user) return
+
+    // Reuse existing familyId on re-saves to avoid duplicate records
+    let existingId
+    try {
+      if (!isFirebaseConfigured) {
+        const existing = JSON.parse(localStorage.getItem(`famly_mock_family_config_${user.uid}`) || 'null')
+        existingId = existing?.familyId
+      }
+    } catch (e) {}
+
     const config = {
-      familyId: `family_${Date.now()}`,
+      familyId: existingId || crypto.randomUUID(),
       familyName: familyName.trim(),
       members,
       plan: user?.plan || 'STARTER',
@@ -415,7 +425,7 @@ function FamilySetup({ onComplete }) {
       await setDoc(doc(db, 'users', user.uid, 'config', 'family'), config)
       onComplete(config)
     } catch (err) {
-      console.error("Error saving family config:", err)
+      console.error('Error saving family config:', err)
     }
   }
 

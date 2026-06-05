@@ -15,7 +15,7 @@ const STEPS = [
   {
     num: '02',
     title: 'Build member profiles',
-    desc: 'Give each family member a custom emoji avatar, a gradient color theme, and select the dashboard matching their specific role—scholar, planner, or administrator.',
+    desc: 'Give each family member a unique profile icon, a color accent, and select the dashboard matching their specific role—scholar, planner, or administrator.',
     accent: 'text-violet-400',
     bgGlow: 'bg-violet-500/10',
     borderColor: 'border-violet-500/20'
