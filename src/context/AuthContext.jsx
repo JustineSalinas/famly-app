@@ -6,6 +6,7 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   updateProfile,
+  sendEmailVerification,
 } from 'firebase/auth'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { auth, db, isFirebaseConfigured } from '../firebase'
@@ -71,6 +72,7 @@ export function AuthProvider({ children }) {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
           displayName: firebaseUser.displayName,
+          emailVerified: firebaseUser.emailVerified,
           plan,
         })
       } else {
@@ -122,6 +124,7 @@ export function AuthProvider({ children }) {
         uid: cred.user.uid,
         email: cred.user.email,
         displayName: cred.user.displayName,
+        emailVerified: cred.user.emailVerified,
         plan,
       })
       return cred
@@ -160,22 +163,35 @@ export function AuthProvider({ children }) {
       await updateProfile(cred.user, { displayName })
     }
 
+    // Send verification email before writing to Firestore so the user
+    // gets the email even if the Firestore write fails.
+    try {
+      await sendEmailVerification(cred.user)
+    } catch (err) {
+      console.error('sendEmailVerification error:', err)
+    }
+
     let resolvedPlan = 'STARTER'
     try {
       await setDoc(doc(db, 'users', cred.user.uid), { plan })
       resolvedPlan = plan
     } catch (err) {
       console.error('Firestore set user plan error:', err)
-      // Firestore write failed — user is registered but plan defaults to STARTER
     }
 
     setUser({
       uid: cred.user.uid,
       email: cred.user.email,
       displayName: displayName || cred.user.displayName,
+      emailVerified: false,
       plan: resolvedPlan,
     })
     return cred
+  }
+
+  const resendVerification = async () => {
+    if (!isFirebaseConfigured || !auth.currentUser) return
+    await sendEmailVerification(auth.currentUser)
   }
 
   const logout = async () => {
@@ -188,7 +204,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isFirebaseConfigured }}>
+    <AuthContext.Provider value={{ user, login, register, logout, resendVerification, isFirebaseConfigured }}>
       {children}
     </AuthContext.Provider>
   )

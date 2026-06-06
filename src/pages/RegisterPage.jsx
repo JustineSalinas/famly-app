@@ -8,13 +8,15 @@ import { AlertCircle } from 'lucide-react'
 
 export default function RegisterPage({ onSwitchToLogin, plan = 'STARTER', initialEmail = '' }) {
   const navigate = useNavigate()
-  const { register, isFirebaseConfigured } = useAuth()
+  const { register, resendVerification, isFirebaseConfigured } = useAuth()
   const [familyName, setFamilyName] = useState('')
   const [email, setEmail] = useState(initialEmail)
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [pendingVerification, setPendingVerification] = useState(false)
+  const [resentEmail, setResentEmail] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -32,12 +34,72 @@ export default function RegisterPage({ onSwitchToLogin, plan = 'STARTER', initia
     setLoading(true)
     try {
       await register(email, password, familyName, plan)
-      navigate('/app', { replace: true })
+      if (!isFirebaseConfigured) {
+        navigate('/app', { replace: true })
+      } else {
+        setPendingVerification(true)
+      }
     } catch (err) {
       setError(getFriendlyError(err.code))
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleResend = async () => {
+    try {
+      await resendVerification()
+      setResentEmail(true)
+      setTimeout(() => setResentEmail(false), 4000)
+    } catch (err) {
+      console.error('Resend error:', err)
+    }
+  }
+
+  if (pendingVerification) {
+    return (
+      <div className="min-h-screen bg-[#030712] flex items-center justify-center px-6 font-sans">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="w-full max-w-sm bg-[#121318] border border-slate-800/40 rounded-2xl p-8 space-y-5 shadow-2xl text-center"
+        >
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+              <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h2 className="text-base font-bold text-slate-100">Check your inbox</h2>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              We sent a verification link to <span className="text-emerald-400 font-semibold">{email}</span>. Click it to activate your account, then sign in.
+            </p>
+          </div>
+
+          {resentEmail && (
+            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-3 py-2 text-xs text-emerald-400">
+              Verification email resent.
+            </div>
+          )}
+
+          <div className="space-y-2 pt-1">
+            <button
+              onClick={() => navigate('/login', { replace: true })}
+              className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-[#090A0F] rounded-lg text-xs font-bold tracking-wider uppercase transition-colors cursor-pointer"
+            >
+              Go to Sign In
+            </button>
+            <button
+              onClick={handleResend}
+              className="w-full py-2 text-xs text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
+            >
+              Didn&apos;t get it? Resend email
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    )
   }
 
   return (

@@ -7,12 +7,64 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import LandingPage from './pages/LandingPage'
 
+// ─── Email verification gate ──────────────────────────────────
+function EmailVerificationGate() {
+  const { user, resendVerification, logout } = useAuth()
+  const navigate = useNavigate()
+  const [resent, setResent] = useState(false)
+
+  const handleResend = async () => {
+    try {
+      await resendVerification()
+      setResent(true)
+      setTimeout(() => setResent(false), 4000)
+    } catch (err) {
+      console.error('Resend error:', err)
+    }
+  }
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#030712', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'sans-serif' }}>
+      <div style={{ width: '100%', maxWidth: 360, background: '#121318', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: 32, textAlign: 'center' }}>
+        <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="rgba(52,211,153,1)" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <h2 style={{ color: '#f1f5f9', fontSize: 15, fontWeight: 700, marginBottom: 8 }}>Verify your email</h2>
+        <p style={{ color: '#94a3b8', fontSize: 12, lineHeight: 1.6, marginBottom: 20 }}>
+          A verification link was sent to <strong style={{ color: '#34d399' }}>{user?.email}</strong>. Click the link in that email, then sign in again.
+        </p>
+        {resent && (
+          <div style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 8, padding: '8px 12px', fontSize: 11, color: '#34d399', marginBottom: 12 }}>
+            Verification email resent.
+          </div>
+        )}
+        <button
+          onClick={handleResend}
+          style={{ width: '100%', padding: '10px', background: '#10b981', border: 'none', borderRadius: 8, color: '#030712', fontSize: 12, fontWeight: 700, cursor: 'pointer', marginBottom: 8 }}
+        >
+          Resend verification email
+        </button>
+        <button
+          onClick={async () => { await logout(); navigate('/login') }}
+          style={{ width: '100%', padding: '10px', background: 'transparent', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, color: '#64748b', fontSize: 12, cursor: 'pointer' }}
+        >
+          Sign out
+        </button>
+      </div>
+    </div>
+  )
+}
+
 // ─── Auth Guard: redirects unauthenticated users to /login ────
 function RequireAuth({ children }) {
   const { user } = useAuth()
   const location = useLocation()
   if (user === undefined) return <LoadingSpinner />
   if (user === null) return <Navigate to="/login" state={{ from: location }} replace />
+  // Block unverified Firebase users. emailVerified is undefined in mock mode — skip gate.
+  if (user.emailVerified === false) return <EmailVerificationGate />
   return children
 }
 

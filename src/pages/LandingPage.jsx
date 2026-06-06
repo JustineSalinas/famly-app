@@ -27,6 +27,8 @@ import {
   MessageSquare
 } from 'lucide-react'
 import '../landing.css'
+import { getFunctions, httpsCallable } from 'firebase/functions'
+import app, { isFirebaseConfigured } from '../firebase'
 import ScrollStorySection from '../components/ui/ScrollStorySection'
 import FeatureScrollReveal from '../components/ui/FeatureScrollReveal'
 import DashboardScrollPreview from '../components/ui/DashboardScrollPreview'
@@ -40,6 +42,26 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
   const [ctaEmail, setCtaEmail] = useState('')
   const [tilt, setTilt] = useState({ x: 0, y: 0 })
   const [navScrolled, setNavScrolled] = useState(false)
+  const [checkoutLoading, setCheckoutLoading] = useState(null) // plan tier being checked out
+
+  const handleCheckout = async (plan) => {
+    if (!isFirebaseConfigured || !user) {
+      onGetStarted('register', plan)
+      return
+    }
+    setCheckoutLoading(plan)
+    try {
+      const functions = getFunctions(app, 'asia-southeast1')
+      const createCheckoutSession = httpsCallable(functions, 'createCheckoutSession')
+      const result = await createCheckoutSession({ plan, currency })
+      window.location.href = result.data.checkoutUrl
+    } catch (err) {
+      console.error('Checkout error:', err)
+      alert('Could not start checkout. Please try again.')
+    } finally {
+      setCheckoutLoading(null)
+    }
+  }
 
   // Global page reading-progress (drives the thin top bar)
   const { scrollYProgress } = useScroll()
@@ -367,14 +389,19 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
                 {/* CTA button */}
                 <button
                   id={`${plan.id}-cta`}
+                  disabled={checkoutLoading !== null}
                   onClick={() => {
-                    if (user) {
-                      onGetStarted('app')
-                    } else {
+                    if (!user) {
                       onGetStarted(plan.ctaAction, plan.tier)
+                      return
                     }
+                    if (plan.tier === 'STARTER' || user.plan === plan.tier) {
+                      onGetStarted('app')
+                      return
+                    }
+                    handleCheckout(plan.tier)
                   }}
-                  className={`w-full py-2.5 rounded-lg text-xs font-bold transition-all active:scale-95 duration-75 mb-6 cursor-pointer ${
+                  className={`w-full py-2.5 rounded-lg text-xs font-bold transition-all active:scale-95 duration-75 mb-6 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed ${
                     plan.featured
                       ? 'bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500/10 glow-button-emerald'
                       : plan.tier === 'STARTER'
@@ -382,7 +409,11 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
                         : 'bg-[#16181D] hover:bg-slate-800 text-slate-200 border border-slate-700/60'
                   }`}
                 >
-                  {user ? (user.plan === plan.tier ? 'Current Plan — Enter Workspace' : 'Enter Workspace') : plan.cta}
+                  {checkoutLoading === plan.tier
+                    ? 'Redirecting…'
+                    : user
+                      ? (user.plan === plan.tier ? 'Current Plan — Enter Workspace' : plan.tier === 'STARTER' ? 'Enter Workspace' : `Upgrade to ${plan.tier}`)
+                      : plan.cta}
                 </button>
 
                 {/* Feature divider */}

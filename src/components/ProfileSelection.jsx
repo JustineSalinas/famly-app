@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Trash2, Edit2, Users, Check, X, ChevronRight, BookOpen, Target, CreditCard, Briefcase, Settings, User, GraduationCap, Upload } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { doc, onSnapshot, setDoc } from 'firebase/firestore'
-import { db, isFirebaseConfigured } from '../firebase'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { db, storage, isFirebaseConfigured } from '../firebase'
 import logo from '../assets/famly.png'
 
 // Available muted, high-density Tailwind colors
@@ -107,7 +108,8 @@ function MemberModal({ member, onSave, onClose, gradientIndex }) {
     if (file) {
       const reader = new FileReader()
       reader.onloadend = () => {
-        setForm(prev => ({ ...prev, image: reader.result, emoji: 'upload' }))
+        // image holds the base64 preview; _imageFile holds the File for Storage upload
+        setForm(prev => ({ ...prev, image: reader.result, _imageFile: file, emoji: 'upload' }))
       }
       reader.readAsDataURL(file)
     }
@@ -352,6 +354,7 @@ function FamilySetup({ onComplete }) {
 
   const { user, isFirebaseConfigured } = useAuth()
   const memberLimit = user?.plan === 'STARTER' ? 1 : 999
+  const [saving, setSaving] = useState(false)
 
   const handleAddMember = (form) => {
     const newMember = {
@@ -399,9 +402,9 @@ function FamilySetup({ onComplete }) {
   }
 
   const handleSave = async () => {
-    if (!familyName.trim() || members.length === 0 || !user) return
+    if (!familyName.trim() || members.length === 0 || !user || saving) return
+    setSaving(true)
 
-    // Reuse existing familyId on re-saves to avoid duplicate records
     let existingId
     try {
       if (!isFirebaseConfigured) {
@@ -410,13 +413,31 @@ function FamilySetup({ onComplete }) {
       }
     } catch (e) {}
 
-    const config = {
-      familyId: existingId || crypto.randomUUID(),
-      familyName: familyName.trim(),
-      members,
-      plan: user?.plan || 'STARTER',
-    }
     try {
+      let processedMembers
+
+      if (isFirebaseConfigured) {
+        // Upload any newly selected photos to Storage; replace base64 with download URL
+        processedMembers = await Promise.all(members.map(async (m) => {
+          const { _imageFile, ...rest } = m
+          if (!_imageFile) return rest
+          const storageRef = ref(storage, `users/${user.uid}/profile-photos/${m.id}`)
+          await uploadBytes(storageRef, _imageFile)
+          const url = await getDownloadURL(storageRef)
+          return { ...rest, image: url }
+        }))
+      } else {
+        // Mock mode: keep base64 preview, just strip the non-serialisable File object
+        processedMembers = members.map(({ _imageFile, ...rest }) => rest)
+      }
+
+      const config = {
+        familyId: existingId || crypto.randomUUID(),
+        familyName: familyName.trim(),
+        members: processedMembers,
+        plan: user?.plan || 'STARTER',
+      }
+
       if (!isFirebaseConfigured) {
         localStorage.setItem(`famly_mock_family_config_${user.uid}`, JSON.stringify(config))
         onComplete(config)
@@ -426,6 +447,8 @@ function FamilySetup({ onComplete }) {
       onComplete(config)
     } catch (err) {
       console.error('Error saving family config:', err)
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -637,12 +660,12 @@ function FamilySetup({ onComplete }) {
               whileTap={{ scale: 0.97 }}
               transition={{ type: 'spring', stiffness: 400, damping: 20 }}
               onClick={handleSave}
-              disabled={!familyName.trim() || members.length === 0}
+              disabled={!familyName.trim() || members.length === 0 || saving}
               className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed shadow-lg shadow-blue-900/30 border border-blue-400/10 cursor-pointer"
             >
               <span className="flex items-center justify-center gap-2">
-                Launch Workspace
-                <ChevronRight size={15} />
+                {saving ? 'Saving…' : 'Launch Workspace'}
+                {!saving && <ChevronRight size={15} />}
               </span>
             </motion.button>
             <p className="text-[10px] text-slate-600 text-center mt-3 leading-relaxed">
