@@ -102,15 +102,15 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
 
       {/* ─── Header / Navbar ────────────────────────────────────────── */}
       <header className={`sticky top-0 z-40 bg-[#090A0F]/90 backdrop-blur-md border-b border-slate-800/40 transition-all duration-300 ${navScrolled ? 'lp-nav-scrolled backdrop-blur-xl' : ''}`}>
-        <div className="max-w-6xl mx-auto w-full px-6 h-14 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto w-full px-6 h-16 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2 flex-1">
-            <img src={logo} alt="Famly" className="h-7 w-auto object-contain" />
-            <span className="text-[15px] font-bold tracking-tight text-slate-200">Famly</span>
+            <img src={logo} alt="Famly" className="h-8 w-auto object-contain" />
+            <span className="text-base font-bold tracking-tight text-slate-200">Famly</span>
           </div>
 
           {/* Nav links (desktop) */}
-          <nav className="hidden md:flex items-center justify-center gap-8 text-xs text-slate-400 font-semibold md:flex-1 tracking-wide">
+          <nav className="hidden md:flex items-center justify-center gap-8 text-sm text-slate-400 font-semibold md:flex-1 tracking-wide">
             <a href="#features" className="hover:text-slate-200 transition-colors duration-150">Features</a>
             <a href="#how-it-works" className="hover:text-slate-200 transition-colors duration-150">How It Works</a>
             <a href="#pricing" className="hover:text-slate-200 transition-colors duration-150">Pricing</a>
@@ -125,14 +125,14 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
                 </span>
                 <button
                   onClick={() => onGetStarted('app')}
-                  className="lp-cta-primary px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg active:scale-95 shadow-md shadow-blue-900/10 border border-blue-500/10 flex items-center gap-1 cursor-pointer transition-colors duration-150"
+                  className="lp-cta-primary px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-lg active:scale-95 shadow-md shadow-blue-900/10 border border-blue-500/10 flex items-center gap-1.5 cursor-pointer transition-colors duration-150"
                 >
                   Enter Workspace
-                  <ArrowUpRight size={12} />
+                  <ArrowUpRight size={14} />
                 </button>
                 <button
                   onClick={onLogout}
-                  className="px-3 py-1.5 text-slate-500 hover:text-slate-200 text-xs font-semibold rounded-lg hover:bg-slate-800/40 transition-all active:scale-95 duration-75 cursor-pointer"
+                  className="px-3.5 py-2 text-slate-500 hover:text-slate-200 text-sm font-semibold rounded-lg hover:bg-slate-800/40 transition-all active:scale-95 duration-75 cursor-pointer"
                 >
                   Sign Out
                 </button>
@@ -141,16 +141,16 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
               <>
                 <button
                   onClick={() => onGetStarted('login')}
-                  className="px-3 py-1.5 text-slate-400 hover:text-slate-200 text-xs font-semibold rounded-lg hover:bg-slate-800/40 transition-all active:scale-95 duration-75"
+                  className="px-3.5 py-2 text-slate-400 hover:text-slate-200 text-sm font-semibold rounded-lg hover:bg-slate-800/40 transition-all active:scale-95 duration-75"
                 >
                   Sign In
                 </button>
                 <button
                   onClick={() => onGetStarted('register', 'STARTER')}
-                  className="lp-cta-primary px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg active:scale-95 shadow-md shadow-blue-900/10 border border-blue-500/10 flex items-center gap-1 transition-colors duration-150"
+                  className="lp-cta-primary px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-lg active:scale-95 shadow-md shadow-blue-900/10 border border-blue-500/10 flex items-center gap-1.5 transition-colors duration-150"
                 >
                   Start Free
-                  <ArrowUpRight size={12} />
+                  <ArrowUpRight size={14} />
                 </button>
               </>
             )}
@@ -168,7 +168,7 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
 
       {/* Mobile nav dropdown drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-slate-800/40 bg-[#16181D]/95 backdrop-blur-md px-6 py-4 space-y-4 absolute top-14 left-0 w-full z-30 shadow-2xl">
+        <div className="md:hidden border-b border-slate-800/40 bg-[#16181D]/95 backdrop-blur-md px-6 py-4 space-y-4 absolute top-16 left-0 w-full z-30 shadow-2xl">
           <nav className="flex flex-col gap-3 text-sm text-slate-400 font-medium">
             <a href="#features" onClick={() => setMobileMenuOpen(false)} className="hover:text-slate-200 transition-colors">Features</a>
             <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="hover:text-slate-200 transition-colors">How It Works</a>
@@ -286,7 +286,7 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
               tier: 'STARTER',
               priceLabel: 'Free',
               priceSuffix: null,
-              desc: 'Perfect for a single family getting started. Track one member per dashboard type with core tools.',
+              desc: 'Perfect for one family to explore. Three members, core dashboards, local storage only.',
               cta: 'Start Free Sandbox',
               ctaAction: 'register',
               featured: false,
@@ -294,53 +294,62 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
               features: [
                 { label: 'Up to 3 family members', included: true },
                 { label: 'Tuition & Debt dashboards', included: true },
-                { label: 'Milestone board', included: true },
+                { label: 'Milestone board (basic)', included: true },
                 { label: 'Shared family profiles', included: true },
-                { label: 'Priority support', included: false },
-                { label: 'Firestore cloud sync', included: false },
+                { label: '7-day data history', included: true },
+                { label: 'Cloud sync & backups', included: false },
+                { label: 'Budget alerts & reports', included: false },
                 { label: 'Export to PDF / CSV', included: false },
+                { label: 'AI financial insights', included: false },
               ]
             },
             {
               id: 'plan-family',
               tier: 'FAMILY',
-              pricePHP: 299,
-              priceUSD: 5,
+              pricePHP: 599,
+              priceUSD: 9,
               priceSuffix: 'per month',
-              desc: 'For growing families. Unlock cloud sync, unlimited members, and priority email support.',
+              desc: 'For growing families who need real-time sync, unlimited members, and monthly financial clarity.',
               cta: 'Get Started',
               ctaAction: 'register',
               featured: true,
               paymongo: true,
               features: [
                 { label: 'Unlimited family members', included: true },
-                { label: 'All 4 dashboards unlocked', included: true },
-                { label: 'Milestone board', included: true },
+                { label: 'All 4 dashboards (full edit)', included: true },
+                { label: 'Milestone board (advanced)', included: true },
                 { label: 'Shared family profiles', included: true },
-                { label: 'Priority support', included: true },
-                { label: 'Firestore cloud sync', included: true },
+                { label: 'Unlimited data history', included: true },
+                { label: 'Firestore real-time cloud sync', included: true },
+                { label: 'Monthly financial summary email', included: true },
+                { label: 'Budget threshold alerts', included: true },
                 { label: 'Export to PDF / CSV', included: false },
+                { label: 'AI financial insights', included: false },
               ]
             },
             {
               id: 'plan-pro',
               tier: 'PRO',
-              pricePHP: 699,
-              priceUSD: 12,
+              pricePHP: 1499,
+              priceUSD: 24,
               priceSuffix: 'per month',
-              desc: 'Everything in Family, plus PDF/CSV exports, analytics insights, and early access to new features.',
+              desc: 'Everything in Family, plus AI insights, tax exports, custom categories, and 24/7 priority support.',
               cta: 'Get Started',
               ctaAction: 'register',
               featured: false,
               paymongo: true,
               features: [
                 { label: 'Unlimited family members', included: true },
-                { label: 'All 4 dashboards unlocked', included: true },
-                { label: 'Milestone board', included: true },
+                { label: 'All 4 dashboards (full edit)', included: true },
+                { label: 'Milestone board (advanced)', included: true },
                 { label: 'Shared family profiles', included: true },
-                { label: 'Priority support', included: true },
-                { label: 'Firestore cloud sync', included: true },
-                { label: 'Export to PDF / CSV', included: true },
+                { label: 'Unlimited data history', included: true },
+                { label: 'Firestore real-time cloud sync', included: true },
+                { label: 'Export to PDF / CSV / Excel', included: true },
+                { label: 'AI-powered spending insights', included: true },
+                { label: 'Tax document export (BIR-ready)', included: true },
+                { label: 'Custom expense categories', included: true },
+                { label: '24/7 priority WhatsApp support', included: true },
               ]
             }
           ].map((plan) => {
@@ -575,7 +584,7 @@ export default function LandingPage({ onGetStarted, user, onLogout }) {
             {[
               {
                 q: 'Is Famly free to use?',
-                a: 'Yes—the Starter plan is completely free forever. You get up to 3 family members, full access to all 4 dashboards, and no credit card required to get started.'
+                a: 'Yes—the Starter plan is completely free forever. You get up to 3 family members, access to all 4 dashboards, and 7 days of data history with no credit card required. For unlimited members, cloud sync, budget alerts, and monthly reports, upgrade to the Family plan at ₱599/month.'
               },
               {
                 q: 'How does profile selection work?',

@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Famly — Progress Report</title>
+  <style>
+    :root {
+      --bg: #090A0F;
+      --bg2: #0C0D0F;
+      --bg3: #121318;
+      --border: rgba(255,255,255,0.06);
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --em: #34d399;
+      --blue: #3b82f6;
+      --rose: #f43f5e;
+      --amber: #f59e0b;
+      --violet: #8b5cf6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(9,10,15,0.92);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 56px;
+    }
+    .topbar-brand { font-size: 15px; font-weight: 800; color: #f1f5f9; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+    .topbar-brand .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--em); box-shadow: 0 0 8px var(--em); }
+    .topbar-meta { font-size: 11px; color: var(--muted); }
+
+    /* Progress bar */
+    .progress-bar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 2.5px;
+      background: linear-gradient(90deg, var(--em), #06b6d4, var(--blue));
+      box-shadow: 0 0 8px rgba(16,185,129,0.5);
+      transform-origin: 0 50%;
+      z-index: 100;
+      pointer-events: none;
+      animation: barLoad 1.4s cubic-bezier(.4,0,.2,1) forwards;
+    }
+    @keyframes barLoad { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+    /* ── Layout ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 40px 32px 80px; }
+
+    /* ── Section header ── */
+    .section-header { margin-bottom: 28px; }
+    .section-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+    .section-title { font-size: 22px; font-weight: 800; color: #f1f5f9; letter-spacing: -0.02em; }
+    .section-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin-bottom: 12px;
+    }
+    .card-title { font-size: 13px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
+    .card-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    /* ── Grid ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    @media (max-width: 720px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    /* ── Status badges ── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+      padding: 2px 9px; border-radius: 20px;
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .badge-done   { background: rgba(16,185,129,.1);  color: var(--em);    border: 1px solid rgba(16,185,129,.2); }
+    .badge-done .badge-dot   { background: var(--em); }
+    .badge-wip    { background: rgba(245,158,11,.1);  color: var(--amber); border: 1px solid rgba(245,158,11,.2); }
+    .badge-wip .badge-dot    { background: var(--amber); }
+    .badge-todo   { background: rgba(100,116,139,.08); color: var(--muted); border: 1px solid rgba(100,116,139,.15); }
+    .badge-todo .badge-dot   { background: var(--muted); }
+    .badge-bug    { background: rgba(244,63,94,.1);   color: var(--rose);  border: 1px solid rgba(244,63,94,.2); }
+    .badge-bug .badge-dot    { background: var(--rose); }
+    .badge-info   { background: rgba(59,130,246,.1);  color: var(--blue);  border: 1px solid rgba(59,130,246,.2); }
+    .badge-info .badge-dot   { background: var(--blue); }
+
+    /* ── Checklist row ── */
+    .checklist { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .checklist li {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 14px; border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      font-size: 12px;
+    }
+    .checklist li .check-icon {
+      width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; margin-top: 1px;
+      display: flex; align-items: center; justify-content: center; font-size: 10px;
+    }
+    .check-done  { background: rgba(16,185,129,.12);  border: 1px solid rgba(16,185,129,.3); color: var(--em); }
+    .check-todo  { background: rgba(100,116,139,.08); border: 1px solid rgba(100,116,139,.2); color: var(--muted); }
+    .check-wip   { background: rgba(245,158,11,.1);   border: 1px solid rgba(245,158,11,.3); color: var(--amber); }
+    .check-bug   { background: rgba(244,63,94,.1);    border: 1px solid rgba(244,63,94,.3);  color: var(--rose); }
+    .checklist li .label { font-weight: 600; color: #e2e8f0; }
+    .checklist li .sub   { color: var(--muted); margin-top: 1px; }
+
+    /* ── Table ── */
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th { text-align: left; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 0 12px 10px; }
+    td { padding: 11px 12px; border-top: 1px solid var(--border); vertical-align: top; }
+    tr:hover td { background: rgba(255,255,255,0.015); }
+    .td-main { font-weight: 600; color: #e2e8f0; }
+    .td-sub  { color: var(--muted); margin-top: 3px; }
+
+    /* ── Stat tiles ── */
+    .stat { text-align: center; }
+    .stat-num { font-size: 32px; font-weight: 800; letter-spacing: -0.03em; }
+    .stat-label { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-top: 2px; }
+
+    /* ── Pricing comparison ── */
+    .price-row { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 0; }
+    .price-row > div { padding: 10px 14px; border-top: 1px solid var(--border); font-size: 12px; }
+    .price-row > div:not(:first-child) { text-align: center; }
+    .price-head { font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+
+    /* ── Divider ── */
+    hr { border: none; border-top: 1px solid var(--border); margin: 36px 0; }
+
+    /* ── Inline code ── */
+    code { background: rgba(255,255,255,.05); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; color: #94a3b8; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar"></div>
+
+<div class="topbar">
+  <div class="topbar-brand">
+    <span class="dot"></span>
+    Famly — Progress Report
+  </div>
+  <div class="topbar-meta">Last updated: June 21, 2026 &nbsp;·&nbsp; v0.5 in development</div>
+</div>
+
+<div class="container">
+
+  <!-- ── Summary Stats ── -->
+  <div class="section-header" style="margin-top:8px;">
+    <div class="section-label">Overview</div>
+    <div class="section-title">Project Health Dashboard</div>
+    <div class="section-sub">Famly · Filipino Family Financial OS · React + Vite + Firebase + PayMongo</div>
+  </div>
+
+  <div class="grid-3" style="margin-bottom:36px;">
+    <div class="card" style="border-left:3px solid var(--em);">
+      <div class="stat">
+        <div class="stat-num" style="color:var(--em);">8</div>
+        <div class="stat-label">Fixes Applied This Session</div>
+      </div>
+    </div>
+    <div class="card" style="border-left:3px solid var(--amber);">
+      <div class="stat">
+        <div class="stat-num" style="color:var(--amber);">5</div>
+        <div class="stat-label">Open Issues / TODOs</div>
+      </div>
+    </div>
+    <div class="card" style="border-left:3px solid var(--blue);">
+      <div class="stat">
+        <div class="stat-num" style="color:var(--blue);">3</div>
+        <div class="stat-label">Pricing Tiers Active</div>
+      </div>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- ── Tech Stack ── -->
+  <div class="section-header">
+    <div class="section-label">Architecture</div>
+    <div class="section-title">Tech Stack Overview</div>
+    <div class="section-sub">End-to-end summary of frontend, backend, and infra</div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:36px;">
+    <div>
+      <div class="card">
+        <div class="card-title">Frontend</div>
+        <div class="card-desc">
+          React 18 + Vite · Tailwind CSS · Framer Motion (scroll-driven animations) ·
+          Lucide React icons · React Router v6 · Capacitor (iOS/Android shell)
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Authentication</div>
+        <div class="card-desc">
+          Firebase Auth (email/password + email verification gate) ·
+          Custom <code>AuthContext</code> with plan field hydration from Firestore ·
+          <code>RequireAuth</code> / <code>RequireGuest</code> route guards ·
+          Email verification enforced before workspace access
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">State & Data</div>
+        <div class="card-desc">
+          Firestore (cloud) · localStorage (Starter sandbox fallback) ·
+          React useState / useEffect · No global state manager (intentional for simplicity)
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title">Backend (Firebase Functions)</div>
+        <div class="card-desc">
+          Node.js Cloud Functions (asia-southeast1) ·
+          <code>createCheckoutSession</code> — PayMongo checkout URL generator ·
+          PayMongo webhook handler for subscription events ·
+          Firestore security rules scoped per-user UID
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Payments</div>
+        <div class="card-desc">
+          PayMongo (PH) for GCash, Maya, cards, bank transfer ·
+          Checkout session created server-side (no keys in browser) ·
+          Webhook updates <code>users/{uid}.plan</code> on payment confirmation
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Deployment</div>
+        <div class="card-desc">
+          Firebase Hosting (SPA rewrite rules) ·
+          Firebase Functions (asia-southeast1) ·
+          Capacitor build for iOS/Android ·
+          Vite production build with manual chunk splitting
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- ── Session Fixes ── -->
+  <div class="section-header">
+    <div class="section-label">This Session</div>
+    <div class="section-title">Fixes Applied — June 21, 2026</div>
+    <div class="section-sub">All changes made during this audit session</div>
+  </div>
+
+  <ul class="checklist" style="margin-bottom:36px;">
+    <li>
+      <span class="check-icon check-done">✓</span>
+      <div>
+        <div class="label">Navigation bar made larger</div>
+        <div class="sub">Height <code>h-14→h-16</code> (56px→64px) · Logo <code>h-7→h-8</code> · Nav links <code>text-xs→text-sm</code> · CTA buttons padded from <code>py-1.5→py-2</code> · Mobile dropdown offset corrected to <code>top-16</code></div>
+      </div>
+      <span class="badge badge-done" style="margin-left:auto;flex-shrink:0;"><span class="badge-dot"></span>Done</span>
+    </li>
+    <li>
+      <span class="check-icon check-done">✓</span>
+      <div>
+        <div class="label">HowItWorks scroll speed slowed</div>
+        <div class="sub">Section height <code>h-[300vh]→h-[500vh]</code> — each of the 4 steps now gets 125vh of scroll instead of 75vh. Significantly more breathing room to read each step before advancing.</div>
+      </div>
+      <span class="badge badge-done" style="margin-left:auto;flex-shrink:0;"><span class="badge-dot"></span>Done</span>
+    </li>
+    <li>
+      <span class="check-icon check-done">✓</span>
+      <div>
+        <div class="label">HowItWorks step visual animation fixed (late on load)</div>
+        <div class="sub">All 4 <code>StepXVisual</code> components changed from spring (<code>stiffness:200, damping:18, x:48</code>) to duration-based (<code>0.28s, ease custom, x:24</code>). Visuals appear crisply when entering — no more perceptible delay on initial view.</div>
+      </div>
+      <span class="badge badge-done" style="margin-left:auto;flex-shrink:0;"><span class="badge-dot"></span>Done</span>
+    </li>
+    <li>
+      <span class="check-icon check-done">✓</span>
+      <div>
+        <div class="label">HowItWorks sticky container clears the navbar</div>
+        <div class="sub">Changed <code>sticky top-0 h-screen</code> to <code>sticky top-16 h-[calc(100vh-64px)]</code> so the sticky panel never slides under the 64px header.</div>
+      </div>
+      <span class="badge badge-done" style="margin-left:auto;flex-shrink:0;"><span class="badge-dot"></span>Done</span>
+    </li>
+    <li>
+      <span class="check-icon check-done">✓</span>
+      <div>
+        <div class="label">Pricing tiers repriced with richer feature sets</div>
+        <div class="sub">Family ₱299→₱599 / $5→$9 · Pro ₱699→₱1,499 / $12→$24 · Added: budget alerts, monthly financial email, unlimited history, AI insights, BIR-ready tax export, custom categories, 24/7 WhatsApp support</div>
+      </div>
+      <span class="badge badge-done" style="margin-left:auto;flex-shrink:0;"><span class="badge-dot"></span>Done</span>
+    </li>
+    <li>
+      <span class="check-icon check-done">✓</span>
+      <div>
+        <div class="label">gstack upgraded 1.58.1.0 → 1.58.4.0</div>
+        <div class="sub">gbrain pooler writes fixed, 6 new credential redaction patterns, dashboard zero-bug fixed, PTY plan-mode smoke gates repaired, Layer C browser stealth enabled.</div>
+      </div>
+      <span class="badge badge-done" style="margin-left:auto;flex-shrink:0;"><span class="badge-dot"></span>Done</span>
+    </li>
+  </ul>
+
+  <hr />
+
+  <!-- ── Pricing Analysis ── -->
+  <div class="section-header">
+    <div class="section-label">Monetisation</div>
+    <div class="section-title">Pricing Rationale</div>
+    <div class="section-sub">Why the new prices are defensible and logical</div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;padding:0;overflow:hidden;">
+    <div class="price-row" style="background:rgba(255,255,255,.02);">
+      <div class="price-head">Feature</div>
+      <div class="price-head">Starter</div>
+      <div class="price-head">Family <span style="color:var(--em)">★</span></div>
+      <div class="price-head">Pro</div>
+    </div>
+    <div class="price-row"><div>Price (PHP / month)</div><div style="color:var(--em);font-weight:700;">Free</div><div style="color:var(--em);font-weight:700;">₱599</div><div style="font-weight:700;">₱1,499</div></div>
+    <div class="price-row"><div>Price (USD / month)</div><div>—</div><div>$9</div><div>$24</div></div>
+    <div class="price-row"><div>Family members</div><div>Up to 3</div><div>Unlimited</div><div>Unlimited</div></div>
+    <div class="price-row"><div>Data history</div><div>7 days</div><div>Unlimited</div><div>Unlimited</div></div>
+    <div class="price-row"><div>All 4 dashboards (full edit)</div><div>View-only</div><div>✓</div><div>✓</div></div>
+    <div class="price-row"><div>Firestore cloud sync</div><div>✗</div><div>✓</div><div>✓</div></div>
+    <div class="price-row"><div>Monthly financial summary email</div><div>✗</div><div>✓</div><div>✓</div></div>
+    <div class="price-row"><div>Budget threshold alerts</div><div>✗</div><div>✓</div><div>✓</div></div>
+    <div class="price-row"><div>Export PDF / CSV / Excel</div><div>✗</div><div>✗</div><div>✓</div></div>
+    <div class="price-row"><div>AI-powered spending insights</div><div>✗</div><div>✗</div><div>✓</div></div>
+    <div class="price-row"><div>Tax document export (BIR-ready)</div><div>✗</div><div>✗</div><div>✓</div></div>
+    <div class="price-row"><div>Custom expense categories</div><div>✗</div><div>✗</div><div>✓</div></div>
+    <div class="price-row" style="border-bottom:none;"><div>Support level</div><div>Community</div><div>Priority email</div><div>24/7 WhatsApp</div></div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:36px;">
+    <div class="card">
+      <div class="card-title" style="color:var(--em);">Why ₱599 Family is fair</div>
+      <div class="card-desc">
+        ₱599/mo is ~2 cups of Starbucks. For a family dealing with multi-creditor debt,
+        tuition tracking, and savings goals, replacing missed payment penalties
+        (₱500–₱2,000 per late bill) in the first month more than pays for the subscription.
+        Comparable: Canva Pro ₱549, Netflix Standard ₱459. Family is priced in that window.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--blue);">Why ₱1,499 Pro is defensible</div>
+      <div class="card-desc">
+        BIR-ready tax export alone saves families 4–8 hours per filing season.
+        AI insights + custom categories turn Famly into a proper CFO tool.
+        At ₱1,499 that's ₱50/day — less than a single Grab ride.
+        Targeting households managing ₱100k+ in annual obligations.
+      </div>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- ── Known Issues / Open TODOs ── -->
+  <div class="section-header">
+    <div class="section-label">Open Issues</div>
+    <div class="section-title">TODOs & Known Flaws</div>
+    <div class="section-sub">Items that still need attention</div>
+  </div>
+
+  <ul class="checklist" style="margin-bottom:36px;">
+    <li>
+      <span class="check-icon check-wip">~</span>
+      <div>
+        <div class="label">Budget alerts (Family tier) — backend not yet wired</div>
+        <div class="sub">Feature shown in pricing but Cloud Function for threshold alerts and email summary hasn't been built. Needs: Firestore trigger on debt/tuition field writes → send email via SendGrid or Firebase Extensions.</div>
+      </div>
+      <span class="badge badge-wip" style="margin-left:auto;flex-shrink:0;"><span class="badge-dot"></span>In Progress</span>
+    </li>
+    <li>
+      <span class="check-icon check-todo">○</span>
+      <div>
+        <div class="label">AI spending insights (Pro tier) — not implemented</div>
+        <div class="sub">Listed in Pro plan. Needs a Cloud Function calling Claude API (claude-haiku-4-5) with a user's Firestore spend history to generate a monthly narrative. Estimated: 2–3 days of work.</div>
+      </div>
+      <span class="badge badge-todo" style="margin-left:auto;flex-shrink:0;"><span class="badge-dot"></span>TODO</span>
+    </li>
+    <li>
+      <span class="check-icon check-todo">○</span>
+      <div>
+        <div class="label">BIR-ready tax export (Pro tier) — not implemented</div>
+        <div class="sub">PDF generation from Firestore debt/expense records formatted as BIR 1701/1702 summary. Needs: PDF library (e.g., jsPDF or Puppeteer in a Cloud Function) + BIR field mapping.</div>
+      </div>
+      <span class="badge badge-todo" style="margin-left:auto;flex-shrink:0;"><span class="badge-dot"></span>TODO</span>
+    </li>
+    <li>
+      <span class="check-icon check-bug">!</span>
+      <div>
+        <div class="label">Firestore security rules — Starter plan enforcement missing</div>
+        <div class="sub"><code>firestore.rules</code> doesn't enforce the 3-member cap or 7-day history limit client-side. A motivated user could bypass plan limits by calling Firestore directly. Needs: rule-based plan checking or server-side Cloud Function gatekeeping.</div>
+      </div>
+      <span class="badge badge-bug" style="margin-left:auto;flex-shrink:0;"><span class="badge-dot"></span>Bug / Risk</span>
+    </li>
+    <li>
+      <span class="check-icon check-todo">○</span>
+      <div>
+        <div class="label">PayMongo webhook — plan downgrade on cancellation not handled</div>
+        <div class="sub">When a subscription is cancelled, the webhook should set <code>users/{uid}.plan = 'STARTER'</code>. Currently only upgrades are handled. Risk: users retain paid features after cancellation.</div>
+      </div>
+      <span class="badge badge-todo" style="margin-left:auto;flex-shrink:0;"><span class="badge-dot"></span>TODO</span>
+    </li>
+    <li>
+      <span class="check-icon check-todo">○</span>
+      <div>
+        <div class="label">Mobile responsive audit needed for new pricing tiers</div>
+        <div class="sub">Pricing cards now have 10–11 feature rows per plan (up from 7). On small mobile viewports cards can overflow or look cramped. Needs visual QA at 375px and 390px widths.</div>
+      </div>
+      <span class="badge badge-todo" style="margin-left:auto;flex-shrink:0;"><span class="badge-dot"></span>TODO</span>
+    </li>
+  </ul>
+
+  <hr />
+
+  <!-- ── Frontend Architecture Notes ── -->
+  <div class="section-header">
+    <div class="section-label">Frontend</div>
+    <div class="section-title">Component Architecture Audit</div>
+    <div class="section-sub">Key files, patterns, and findings</div>
+  </div>
+
+  <table style="margin-bottom:36px;">
+    <thead>
+      <tr>
+        <th style="width:30%">File</th>
+        <th style="width:15%">Status</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><div class="td-main"><code>pages/LandingPage.jsx</code></div></td>
+        <td><span class="badge badge-done"><span class="badge-dot"></span>Good</span></td>
+        <td class="td-sub">Monolithic but well-organised. Pricing, FAQ, CTA, footer all in one file. Fine at current size; consider splitting if it grows past 1,000 lines.</td>
+      </tr>
+      <tr>
+        <td><div class="td-main"><code>components/ui/ScrollStorySection.jsx</code></div></td>
+        <td><span class="badge badge-done"><span class="badge-dot"></span>Good</span></td>
+        <td class="td-sub">Scroll-scrubbed hero with <code>useScroll + useTransform</code>. No spring (intentional for 1:1 lock). Mobile fallback to static layout. GPU-accelerated via <code>will-change</code>.</td>
+      </tr>
+      <tr>
+        <td><div class="td-main"><code>components/ui/HowItWorksFlow.jsx</code></div></td>
+        <td><span class="badge badge-wip"><span class="badge-dot"></span>Fixed</span></td>
+        <td class="td-sub">Section height 300→500vh. Step transition animations faster and shorter. Sticky container now clears navbar. Step scroll speed is much more comfortable.</td>
+      </tr>
+      <tr>
+        <td><div class="td-main"><code>components/ui/ProblemSolutionResult.jsx</code></div></td>
+        <td><span class="badge badge-done"><span class="badge-dot"></span>Good</span></td>
+        <td class="td-sub">IntersectionObserver-driven step advancement. Smooth motion transitions. <code>300vh</code> scroll height with 3 trigger sections.</td>
+      </tr>
+      <tr>
+        <td><div class="td-main"><code>components/ui/DashboardScrollPreview.jsx</code></div></td>
+        <td><span class="badge badge-info"><span class="badge-dot"></span>Review</span></td>
+        <td class="td-sub">Not audited yet. Likely contains laptop mockup scroll animation. Should verify it also clears the navbar sticky position.</td>
+      </tr>
+      <tr>
+        <td><div class="td-main"><code>components/ui/FeatureScrollReveal.jsx</code></div></td>
+        <td><span class="badge badge-info"><span class="badge-dot"></span>Review</span></td>
+        <td class="td-sub">Not audited in detail. Should verify scroll-triggered reveals work correctly and don't overlap with adjacent sections.</td>
+      </tr>
+      <tr>
+        <td><div class="td-main"><code>context/AuthContext.jsx</code></div></td>
+        <td><span class="badge badge-done"><span class="badge-dot"></span>Good</span></td>
+        <td class="td-sub">Firebase Auth state watcher, plan hydration from Firestore, email verification gate. Well-structured.</td>
+      </tr>
+      <tr>
+        <td><div class="td-main"><code>landing.css</code></div></td>
+        <td><span class="badge badge-wip"><span class="badge-dot"></span>Partial</span></td>
+        <td class="td-sub"><code>.how-it-works-sticky</code> CSS class defines <code>top:80px</code> but the component uses inline Tailwind <code>top-16</code> — the CSS class is effectively unused. Consider removing it to avoid confusion.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr />
+
+  <!-- ── Backend Notes ── -->
+  <div class="section-header">
+    <div class="section-label">Backend</div>
+    <div class="section-title">Cloud Functions & Firebase Audit</div>
+  </div>
+
+  <table style="margin-bottom:36px;">
+    <thead>
+      <tr>
+        <th style="width:30%">Item</th>
+        <th style="width:15%">Status</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><div class="td-main"><code>createCheckoutSession</code></div></td>
+        <td><span class="badge badge-done"><span class="badge-dot"></span>Live</span></td>
+        <td class="td-sub">Creates a PayMongo checkout URL server-side. Currency param (PHP/USD) passed from frontend. No API keys exposed to browser.</td>
+      </tr>
+      <tr>
+        <td><div class="td-main">PayMongo webhook</div></td>
+        <td><span class="badge badge-wip"><span class="badge-dot"></span>Partial</span></td>
+        <td class="td-sub">Upgrade path handled. Cancellation / downgrade not yet wired — <strong>risk: plan not reverted on cancel</strong>.</td>
+      </tr>
+      <tr>
+        <td><div class="td-main">Email verification flow</div></td>
+        <td><span class="badge badge-done"><span class="badge-dot"></span>Live</span></td>
+        <td class="td-sub">Firebase sends verification email. <code>EmailVerificationGate</code> blocks app access until verified. Resend button included.</td>
+      </tr>
+      <tr>
+        <td><div class="td-main">Firestore rules</div></td>
+        <td><span class="badge badge-bug"><span class="badge-dot"></span>Risk</span></td>
+        <td class="td-sub">UID-scoped data access is correct. Plan-based limits (3-member cap, 7-day history) are NOT enforced in rules — enforced only in UI, which is bypassable.</td>
+      </tr>
+      <tr>
+        <td><div class="td-main">Storage rules</div></td>
+        <td><span class="badge badge-done"><span class="badge-dot"></span>Present</span></td>
+        <td class="td-sub"><code>storage.rules</code> file exists. Needs audit to confirm upload scope is properly restricted.</td>
+      </tr>
+      <tr>
+        <td><div class="td-main">Budget alert function</div></td>
+        <td><span class="badge badge-todo"><span class="badge-dot"></span>TODO</span></td>
+        <td class="td-sub">Not yet built. Required for Family plan's "Budget threshold alerts" feature promise.</td>
+      </tr>
+      <tr>
+        <td><div class="td-main">Monthly summary email</div></td>
+        <td><span class="badge badge-todo"><span class="badge-dot"></span>TODO</span></td>
+        <td class="td-sub">Not yet built. Required for Family plan's "Monthly financial summary email" feature promise.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr />
+
+  <!-- ── Scroll & Animation ── -->
+  <div class="section-header">
+    <div class="section-label">UX</div>
+    <div class="section-title">Scroll & Animation Audit</div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:36px;">
+    <div>
+      <div class="card" style="border-left:3px solid var(--em);">
+        <div class="card-title">What works well</div>
+        <div class="card-desc">
+          · Film grain overlay adds premium tactile feel<br>
+          · Reading-progress bar (thin green top) is a nice wayfinding touch<br>
+          · <code>prefers-reduced-motion</code> respected — all CSS animations disabled<br>
+          · GPU acceleration via <code>will-change + transform: translateZ(0)</code><br>
+          · Phone mockup 3D float looks polished<br>
+          · Circulating border on FAMILY card is a strong visual differentiator
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="border-left:3px solid var(--rose);">
+        <div class="card-title">Issues found / fixed</div>
+        <div class="card-desc">
+          · <strong>Fixed:</strong> HowItWorks scroll too fast (300vh → 500vh)<br>
+          · <strong>Fixed:</strong> Step visual spring animation felt slow on load (now 0.28s ease)<br>
+          · <strong>Fixed:</strong> Sticky content rendered under navbar (top-0 → top-16)<br>
+          · <strong>Review:</strong> DashboardScrollPreview sticky position not verified<br>
+          · <strong>Review:</strong> Multiple large sticky sections could compound scroll jank on low-end Android
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- ── Next Priorities ── -->
+  <div class="section-header">
+    <div class="section-label">Roadmap</div>
+    <div class="section-title">Recommended Next Steps</div>
+    <div class="section-sub">Ordered by impact</div>
+  </div>
+
+  <ul class="checklist" style="margin-bottom:40px;">
+    <li>
+      <span class="check-icon check-todo">1</span>
+      <div>
+        <div class="label">Wire PayMongo cancellation webhook → plan downgrade</div>
+        <div class="sub">High priority security / billing integrity fix. Without this, cancelled subscribers retain Pro/Family features indefinitely.</div>
+      </div>
+      <span class="badge badge-bug" style="margin-left:auto;flex-shrink:0;"><span class="badge-dot"></span>High</span>
+    </li>
+    <li>
+      <span class="check-icon check-todo">2</span>
+      <div>
+        <div class="label">Firestore rules: enforce plan limits server-side</div>
+        <div class="sub">Add rule checks: Starter can only write ≤3 member documents, data older than 7 days cannot be read. Prevents plan bypassing.</div>
+      </div>
+      <span class="badge badge-bug" style="margin-left:auto;flex-shrink:0;"><span class="badge-dot"></span>High</span>
+    </li>
+    <li>
+      <span class="check-icon check-todo">3</span>
+      <div>
+        <div class="label">Build monthly summary email (Family tier fulfillment)</div>
+        <div class="sub">Cloud Function triggered on the 1st of each month. Queries Firestore for the user's debt/tuition/savings state and sends a styled summary via SendGrid or Firebase Email Extension.</div>
+      </div>
+      <span class="badge badge-wip" style="margin-left:auto;flex-shrink:0;"><span class="badge-dot"></span>Medium</span>
+    </li>
+    <li>
+      <span class="check-icon check-todo">4</span>
+      <div>
+        <div class="label">PDF/CSV export (Pro tier fulfillment)</div>
+        <div class="sub">jsPDF in-browser or Puppeteer Cloud Function. Export Debt Ledger, Tuition records, Milestone list as formatted PDF or CSV.</div>
+      </div>
+      <span class="badge badge-wip" style="margin-left:auto;flex-shrink:0;"><span class="badge-dot"></span>Medium</span>
+    </li>
+    <li>
+      <span class="check-icon check-todo">5</span>
+      <div>
+        <div class="label">Mobile QA: pricing cards at 375px with new feature rows</div>
+        <div class="sub">Run <code>/qa</code> at 375px viewport. The new 10–11 row feature lists may overflow or look cramped on iPhone SE-sized screens.</div>
+      </div>
+      <span class="badge badge-info" style="margin-left:auto;flex-shrink:0;"><span class="badge-dot"></span>Low</span>
+    </li>
+    <li>
+      <span class="check-icon check-todo">6</span>
+      <div>
+        <div class="label">AI spending insights (Pro tier) — Claude API integration</div>
+        <div class="sub">Call <code>claude-haiku-4-5</code> with a JSON summary of the family's monthly spending categories. Return a 150-word narrative + 3 actionable savings tips. Display in a new "Insights" tab inside the Pro dashboard.</div>
+      </div>
+      <span class="badge badge-todo" style="margin-left:auto;flex-shrink:0;"><span class="badge-dot"></span>Future</span>
+    </li>
+  </ul>
+
+  <hr />
+
+  <!-- ── Footer ── -->
+  <div style="text-align:center;color:var(--muted);font-size:11px;padding-top:8px;">
+    Famly Progress Report &nbsp;·&nbsp; Generated June 21, 2026 &nbsp;·&nbsp;
+    Open <code>progress-report.html</code> in any browser to view · Refresh after each session
+  </div>
+
+</div>
+
+</body>
+</html>

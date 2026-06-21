@@ -117,13 +117,13 @@ function HowItWorksDesktop() {
   }
 
   return (
-    <section 
-      ref={containerRef} 
-      id="how-it-works" 
-      className="w-full bg-[#090A0F] border-t border-slate-800/40 relative z-10 h-[300vh]"
+    <section
+      ref={containerRef}
+      id="how-it-works"
+      className="w-full bg-[#090A0F] border-t border-slate-800/40 relative z-10 h-[500vh]"
     >
-      {/* Sticky Container */}
-      <div className="sticky top-0 h-screen w-full flex items-center z-20 overflow-hidden">
+      {/* Sticky Container — top-16 clears the 64px navbar */}
+      <div className="sticky top-16 h-[calc(100vh-64px)] w-full flex items-center z-20 overflow-hidden">
         <div className="max-w-6xl mx-auto w-full px-6 py-8 flex flex-col justify-center h-full">
           
           {/* Section Header */}
@@ -234,10 +234,10 @@ function StepRow({ step, index, activeStep, onClick }) {
 function StepOneVisual() {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.96, x: 48 }}
+      initial={{ opacity: 0, scale: 0.98, x: 24 }}
       animate={{ opacity: 1, scale: 1, x: 0 }}
-      exit={{ opacity: 0, scale: 0.96, x: -32 }}
-      transition={{ type: 'spring', stiffness: 200, damping: 18 }}
+      exit={{ opacity: 0, scale: 0.96, x: -24 }}
+      transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
       className="w-[360px] bg-[#090A0F] border border-white/10 rounded-xl p-6 shadow-xl text-left relative z-10"
     >
       <div className="flex items-center gap-2.5 border-b border-white/5 pb-3 mb-4">
@@ -280,10 +280,10 @@ function StepOneVisual() {
 function StepTwoVisual() {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.96, x: 48 }}
+      initial={{ opacity: 0, scale: 0.98, x: 24 }}
       animate={{ opacity: 1, scale: 1, x: 0 }}
-      exit={{ opacity: 0, scale: 0.96, x: -32 }}
-      transition={{ type: 'spring', stiffness: 200, damping: 18 }}
+      exit={{ opacity: 0, scale: 0.96, x: -24 }}
+      transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
       className="w-full max-w-[420px] text-center"
     >
       <p className="text-[10px] font-bold uppercase text-slate-500 tracking-widest mb-6">Choose Member Profile</p>
@@ -319,10 +319,10 @@ function StepTwoVisual() {
 function StepThreeVisual() {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.96, x: 48 }}
+      initial={{ opacity: 0, scale: 0.98, x: 24 }}
       animate={{ opacity: 1, scale: 1, x: 0 }}
-      exit={{ opacity: 0, scale: 0.96, x: -32 }}
-      transition={{ type: 'spring', stiffness: 200, damping: 18 }}
+      exit={{ opacity: 0, scale: 0.96, x: -24 }}
+      transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
       className="w-[380px] bg-[#090A0F] border border-white/10 rounded-xl p-5 shadow-xl text-left"
     >
       <div className="flex justify-between items-center border-b border-white/5 pb-3 mb-4">
@@ -371,10 +371,10 @@ function StepThreeVisual() {
 function StepFourVisual() {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.96, x: 48 }}
+      initial={{ opacity: 0, scale: 0.98, x: 24 }}
       animate={{ opacity: 1, scale: 1, x: 0 }}
-      exit={{ opacity: 0, scale: 0.96, x: -32 }}
-      transition={{ type: 'spring', stiffness: 200, damping: 18 }}
+      exit={{ opacity: 0, scale: 0.96, x: -24 }}
+      transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
       className="w-full max-w-[500px] flex flex-col items-center relative"
     >
       {/* Central Sync Hub Icon */}
